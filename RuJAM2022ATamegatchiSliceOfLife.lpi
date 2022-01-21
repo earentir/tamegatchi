@@ -118,7 +118,7 @@
       <Unit>
         <Filename Value="rujamaunit.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form1"/>
+        <ComponentName Value="tamegatchiForm"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
