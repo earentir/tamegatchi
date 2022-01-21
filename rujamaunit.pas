@@ -13,12 +13,24 @@ type
 
   TtamegatchiForm = class(TForm)
     bgImage: TImage;
+    pictoHome1: TImage;
+    PictoMenuPanel: TPanel;
+    pictoHome10: TImage;
+    pictoHome2: TImage;
+    pictoHome3: TImage;
+    pictoHome4: TImage;
+    pictoHome5: TImage;
+    pictoHome6: TImage;
+    pictoHome7: TImage;
+    pictoHome8: TImage;
+    pictoHome9: TImage;
     ShadowImage: TImage;
     SpriteImage: TImage;
     MasterTimer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure MasterTimerTimer(Sender: TObject);
+    procedure pictoHomeClick(Sender: TObject);
     procedure SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure SpriteImageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure SpriteImageMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
@@ -33,6 +45,7 @@ var
   settingList: TStringList;
   canMoveForm: boolean;
   mouseX, mouseY: integer;
+  menuItems: array of string = ('home', 'health', 'food', 'yard', 'settings', 'bath', 'play', 'book', 'shop', 'exit');
 
 implementation
 
@@ -40,13 +53,23 @@ implementation
 
 { TtamegatchiForm }
 
+//Icon Attribution: Entypo pictograms by Daniel Bruce — www.entypo.com
+
 procedure TtamegatchiForm.FormCreate(Sender: TObject);
+var
+  i: integer;
 begin
   bgImage.Picture.PNG.LoadFromFile(GetCurrentDir + PathDelim + 'media\img\bg-lcd-off.png');
 
   settingList := TStringList.Create;
   settingList.Values['eggFrame'] := IntToStr(0);
 
+  for i := 0 to PictoMenuPanel.ControlCount - 1 do
+  begin
+    (PictoMenuPanel.Controls[i] as TImage).Picture.PNG.LoadFromFile(GetCurrentDir + PathDelim +
+      'media\img\pictograms\' + menuItems[StrToInt(Copy(PictoMenuPanel.Controls[i].GetNamePath, Length('pictoHome') + 1, 2)) -
+      1] + '.png');
+  end;
 end;
 
 //Mask On bitmap to make rest of the form transparent
@@ -79,6 +102,18 @@ begin
   SpriteImage.Picture.png.LoadFromFile(AnimateObject('egg', StrToInt(settingList.Values['eggFrame'])) + '.png');
   ShadowImage.Picture.png.LoadFromFile(AnimateObject('egg', StrToInt(settingList.Values['eggFrame'])) + '-shadow' + '.png');
   settingList.Values['eggFrame'] := IntToStr(StrToInt(settingList.Values['eggFrame']) + 1);
+end;
+
+procedure TtamegatchiForm.pictoHomeClick(Sender: TObject);
+begin
+  case menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] of
+    'home':
+    begin
+    end;
+
+    'exit':
+      Application.Terminate;
+  end;
 end;
 
 procedure TtamegatchiForm.SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);

@@ -36,13 +36,117 @@ object tamegatchiForm: TtamegatchiForm
     Left = 128
     Height = 256
     Top = 120
-    Width = 255
+    Width = 256
     Center = True
     OnMouseDown = SpriteImageMouseDown
     OnMouseMove = SpriteImageMouseMove
     OnMouseUp = SpriteImageMouseUp
     Proportional = True
     Stretch = True
+  end
+  object PictoMenuPanel: TPanel
+    Left = 128
+    Height = 256
+    Top = 120
+    Width = 256
+    BevelOuter = bvNone
+    ClientHeight = 256
+    ClientWidth = 256
+    TabOrder = 0
+    OnMouseDown = SpriteImageMouseDown
+    OnMouseMove = SpriteImageMouseMove
+    OnMouseUp = SpriteImageMouseUp
+    object pictoHome1: TImage
+      Left = 1
+      Height = 51
+      Top = 0
+      Width = 51
+      Center = True
+      StretchOutEnabled = False
+      StretchInEnabled = False
+    end
+    object pictoHome2: TImage
+      Left = 52
+      Height = 51
+      Top = 0
+      Width = 51
+      Center = True
+      StretchOutEnabled = False
+      StretchInEnabled = False
+    end
+    object pictoHome3: TImage
+      Left = 103
+      Height = 51
+      Top = 0
+      Width = 51
+      Center = True
+      StretchOutEnabled = False
+      StretchInEnabled = False
+    end
+    object pictoHome4: TImage
+      Left = 154
+      Height = 51
+      Top = 0
+      Width = 51
+      Center = True
+      StretchOutEnabled = False
+      StretchInEnabled = False
+    end
+    object pictoHome5: TImage
+      Left = 205
+      Height = 51
+      Top = 0
+      Width = 51
+      Center = True
+      StretchOutEnabled = False
+      StretchInEnabled = False
+    end
+    object pictoHome6: TImage
+      Left = 0
+      Height = 51
+      Top = 211
+      Width = 51
+      Center = True
+      StretchOutEnabled = False
+      StretchInEnabled = False
+    end
+    object pictoHome7: TImage
+      Left = 51
+      Height = 51
+      Top = 211
+      Width = 51
+      Center = True
+      StretchOutEnabled = False
+      StretchInEnabled = False
+    end
+    object pictoHome8: TImage
+      Left = 102
+      Height = 51
+      Top = 211
+      Width = 51
+      Center = True
+      StretchOutEnabled = False
+      StretchInEnabled = False
+    end
+    object pictoHome9: TImage
+      Left = 153
+      Height = 51
+      Top = 211
+      Width = 51
+      Center = True
+      StretchOutEnabled = False
+      StretchInEnabled = False
+    end
+    object pictoHome10: TImage
+      Left = 204
+      Height = 51
+      Top = 211
+      Width = 51
+      Center = True
+      OnClick = pictoHomeClick
+      StretchOutEnabled = False
+      StretchInEnabled = False
+    end
   end
   object MasterTimer: TTimer
     Interval = 250
