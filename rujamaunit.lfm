@@ -166,8 +166,15 @@ object tamegatchiForm: TtamegatchiForm
     Proportional = True
     Stretch = True
   end
+  object MarkerImage: TImage
+    Left = 64
+    Height = 9
+    Top = 91
+    Width = 15
+    Stretch = True
+  end
   object MasterTimer: TTimer
-    Interval = 200
+    Interval = 250
     OnTimer = MasterTimerTimer
     Left = 464
     Top = 16
