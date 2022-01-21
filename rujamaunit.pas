@@ -106,6 +106,8 @@ end;
 
 procedure TtamegatchiForm.pictoHomeClick(Sender: TObject);
 begin
+  WriteLn('menu: ', menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1]);
+
   case menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] of
     'home':
     begin

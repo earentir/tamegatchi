@@ -62,6 +62,7 @@ object tamegatchiForm: TtamegatchiForm
       Top = 0
       Width = 51
       Center = True
+      OnClick = pictoHomeClick
       StretchOutEnabled = False
       StretchInEnabled = False
     end
@@ -71,6 +72,7 @@ object tamegatchiForm: TtamegatchiForm
       Top = 0
       Width = 51
       Center = True
+      OnClick = pictoHomeClick
       StretchOutEnabled = False
       StretchInEnabled = False
     end
@@ -80,6 +82,7 @@ object tamegatchiForm: TtamegatchiForm
       Top = 0
       Width = 51
       Center = True
+      OnClick = pictoHomeClick
       StretchOutEnabled = False
       StretchInEnabled = False
     end
@@ -89,6 +92,7 @@ object tamegatchiForm: TtamegatchiForm
       Top = 0
       Width = 51
       Center = True
+      OnClick = pictoHomeClick
       StretchOutEnabled = False
       StretchInEnabled = False
     end
@@ -98,6 +102,7 @@ object tamegatchiForm: TtamegatchiForm
       Top = 0
       Width = 51
       Center = True
+      OnClick = pictoHomeClick
       StretchOutEnabled = False
       StretchInEnabled = False
     end
@@ -107,6 +112,7 @@ object tamegatchiForm: TtamegatchiForm
       Top = 211
       Width = 51
       Center = True
+      OnClick = pictoHomeClick
       StretchOutEnabled = False
       StretchInEnabled = False
     end
@@ -116,6 +122,7 @@ object tamegatchiForm: TtamegatchiForm
       Top = 211
       Width = 51
       Center = True
+      OnClick = pictoHomeClick
       StretchOutEnabled = False
       StretchInEnabled = False
     end
@@ -125,6 +132,7 @@ object tamegatchiForm: TtamegatchiForm
       Top = 211
       Width = 51
       Center = True
+      OnClick = pictoHomeClick
       StretchOutEnabled = False
       StretchInEnabled = False
     end
@@ -134,6 +142,7 @@ object tamegatchiForm: TtamegatchiForm
       Top = 211
       Width = 51
       Center = True
+      OnClick = pictoHomeClick
       StretchOutEnabled = False
       StretchInEnabled = False
     end
