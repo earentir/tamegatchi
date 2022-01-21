@@ -64,12 +64,12 @@ var
 begin
   if StrToInt(settingList.Values['eggFrame']) < Length(imagefilename) then
   begin
-    Result := GetCurrentDir + PathDelim + 'media\img\egg\' + objectName + imagefilename[index];
+    Result := GetCurrentDir + PathDelim + 'media\img\' + objectName + PathDelim + objectName + imagefilename[index];
   end
   else
   begin
     settingList.Values['eggFrame'] := IntToStr(0);
-    Result := GetCurrentDir + PathDelim + 'media\img\egg\' + objectName + imagefilename[0];
+    Result := GetCurrentDir + PathDelim + 'media\img\' + objectName + PathDelim + objectName + imagefilename[0];
   end;
 end;
 
