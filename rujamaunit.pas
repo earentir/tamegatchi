@@ -32,6 +32,7 @@ var
   tamegatchiForm: TtamegatchiForm;
   settingList: TStringList;
   canMoveForm: boolean;
+  mouseX, mouseY: integer;
 
 implementation
 
@@ -83,14 +84,16 @@ end;
 procedure TtamegatchiForm.SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
   canMoveForm := True;
+  mouseX := X;
+  mouseY := Y;
 end;
 
 procedure TtamegatchiForm.SpriteImageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 begin
   if canMoveForm then
   begin
-    tamegatchiForm.Left := X;
-    tamegatchiForm.Top := Y;
+    tamegatchiForm.Left := tamegatchiForm.Left + X - mouseX;
+    tamegatchiForm.Top := tamegatchiForm.Top + Y - mouseY;
   end;
 end;
 
