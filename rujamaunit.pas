@@ -9,9 +9,9 @@ uses
 
 type
 
-  { TForm1 }
+  { TtamegatchiForm }
 
-  TForm1 = class(TForm)
+  TtamegatchiForm = class(TForm)
     bgImage: TImage;
     ShadowImage: TImage;
     SpriteImage: TImage;
@@ -21,6 +21,7 @@ type
     procedure MasterTimerTimer(Sender: TObject);
     procedure SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure SpriteImageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
+    procedure SpriteImageMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
   private
 
   public
@@ -28,16 +29,17 @@ type
   end;
 
 var
-  Form1: TForm1;
+  tamegatchiForm: TtamegatchiForm;
   settingList: TStringList;
+  canMoveForm: boolean;
 
 implementation
 
 {$R *.lfm}
 
-{ TForm1 }
+{ TtamegatchiForm }
 
-procedure TForm1.FormCreate(Sender: TObject);
+procedure TtamegatchiForm.FormCreate(Sender: TObject);
 begin
   bgImage.Picture.PNG.LoadFromFile(GetCurrentDir + PathDelim + 'media\img\bg-lcd-off.png');
 
@@ -47,7 +49,7 @@ begin
 end;
 
 //Mask On bitmap to make rest of the form transparent
-procedure TForm1.FormPaint(Sender: TObject);
+procedure TtamegatchiForm.FormPaint(Sender: TObject);
 var
   maskpicture: TPicture;
 begin
@@ -71,22 +73,30 @@ begin
   end;
 end;
 
-procedure TForm1.MasterTimerTimer(Sender: TObject);
+procedure TtamegatchiForm.MasterTimerTimer(Sender: TObject);
 begin
   SpriteImage.Picture.png.LoadFromFile(AnimateObject('egg', StrToInt(settingList.Values['eggFrame'])) + '.png');
-  writeln(SpriteImage.Picture.png.GetNamePath);
   ShadowImage.Picture.png.LoadFromFile(AnimateObject('egg', StrToInt(settingList.Values['eggFrame'])) + '-shadow' + '.png');
   settingList.Values['eggFrame'] := IntToStr(StrToInt(settingList.Values['eggFrame']) + 1);
 end;
 
-procedure TForm1.SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+procedure TtamegatchiForm.SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
-
+  canMoveForm := True;
 end;
 
-procedure TForm1.SpriteImageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
+procedure TtamegatchiForm.SpriteImageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
 begin
+  if canMoveForm then
+  begin
+    tamegatchiForm.Left := X;
+    tamegatchiForm.Top := Y;
+  end;
+end;
 
+procedure TtamegatchiForm.SpriteImageMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+begin
+  canMoveForm := False;
 end;
 
 end.

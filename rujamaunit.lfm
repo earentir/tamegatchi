@@ -1,11 +1,11 @@
-object Form1: TForm1
+object tamegatchiForm: TtamegatchiForm
   Left = 263
   Height = 512
   Top = 250
   Width = 512
   AlphaBlendValue = 150
   BorderStyle = bsNone
-  Caption = 'Form1'
+  Caption = 'tamegatchiForm'
   ClientHeight = 512
   ClientWidth = 512
   Color = clFuchsia
@@ -38,6 +38,7 @@ object Form1: TForm1
     Center = True
     OnMouseDown = SpriteImageMouseDown
     OnMouseMove = SpriteImageMouseMove
+    OnMouseUp = SpriteImageMouseUp
     Proportional = True
     Stretch = True
   end
