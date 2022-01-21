@@ -1,0 +1,50 @@
+object Form1: TForm1
+  Left = 263
+  Height = 512
+  Top = 250
+  Width = 512
+  AlphaBlendValue = 150
+  BorderStyle = bsNone
+  Caption = 'Form1'
+  ClientHeight = 512
+  ClientWidth = 512
+  Color = clFuchsia
+  OnCreate = FormCreate
+  OnPaint = FormPaint
+  object bgImage: TImage
+    Left = 0
+    Height = 512
+    Top = 0
+    Width = 512
+    Align = alClient
+    Center = True
+    Proportional = True
+    Stretch = True
+  end
+  object ShadowImage: TImage
+    Left = 130
+    Height = 256
+    Top = 122
+    Width = 255
+    Center = True
+    Proportional = True
+    Stretch = True
+  end
+  object SpriteImage: TImage
+    Left = 128
+    Height = 256
+    Top = 120
+    Width = 255
+    Center = True
+    OnMouseDown = SpriteImageMouseDown
+    OnMouseMove = SpriteImageMouseMove
+    Proportional = True
+    Stretch = True
+  end
+  object MasterTimer: TTimer
+    Interval = 250
+    OnTimer = MasterTimerTimer
+    Left = 464
+    Top = 16
+  end
+end
