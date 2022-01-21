@@ -9,8 +9,10 @@ object tamegatchiForm: TtamegatchiForm
   ClientHeight = 512
   ClientWidth = 512
   Color = clFuchsia
+  FormStyle = fsSystemStayOnTop
   OnCreate = FormCreate
   OnPaint = FormPaint
+  Position = poScreenCenter
   object bgImage: TImage
     Left = 0
     Height = 512
