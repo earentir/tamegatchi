@@ -157,8 +157,17 @@ object tamegatchiForm: TtamegatchiForm
       StretchInEnabled = False
     end
   end
+  object ScreensImage: TImage
+    Left = 130
+    Height = 256
+    Top = 122
+    Width = 255
+    Center = True
+    Proportional = True
+    Stretch = True
+  end
   object MasterTimer: TTimer
-    Interval = 250
+    Interval = 200
     OnTimer = MasterTimerTimer
     Left = 464
     Top = 16
