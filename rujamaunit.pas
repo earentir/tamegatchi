@@ -12,12 +12,16 @@ type
   { TtamegatchiForm }
 
   TtamegatchiForm = class(TForm)
+    FoodImage2: TImage;
     bgImage: TImage;
+    FoodImage4: TImage;
+    FoodImage1: TImage;
     HealthMarkerImage: TImage;
     FoodMarkerImage: TImage;
     BathMarkerImage: TImage;
     BookMarkerImage: TImage;
     MarkerPanel: TPanel;
+    FoodPanel: TPanel;
     PlayMarkerImage: TImage;
     pictoHome1: TImage;
     PictoMenuPanel: TPanel;
@@ -31,6 +35,7 @@ type
     pictoHome8: TImage;
     pictoHome9: TImage;
     contextMenu: TPopupMenu;
+    FoodImage3: TImage;
     ShadowImage: TImage;
     ScreensImage: TImage;
     SpriteImage: TImage;
@@ -47,6 +52,8 @@ type
     procedure PlayAnimation(objectName: string);
     procedure updateHealthPanel;
     procedure contextMenuClick(Sender: TObject);
+    procedure updateFoodPanel;
+    procedure FeedClick(Sender: TObject);
   public
 
   end;
@@ -127,8 +134,9 @@ procedure TtamegatchiForm.FormCreate(Sender: TObject);
 var
   i: integer;
   mi: TMenuItem;
-  abouttext: array of string = ('Made for RuJAM 2022A', 'Graphics by Evel_Cult_Leader', 'Code by Earentir','❤❤ Rujum ❤❤');
-  aboutlinks: array of string = ('https://rujam.top', 'https://twitch.tv/evel_cult_leader', 'https://twitch.tv/earentir','https://twitch.tv/therujum');
+  abouttext: array of string = ('Made for RuJAM 2022A', 'Graphics by Evel_Cult_Leader', 'Code by Earentir', '❤❤ Rujum ❤❤');
+  aboutlinks: array of string = ('https://rujam.top', 'https://twitch.tv/evel_cult_leader', 'https://twitch.tv/earentir',
+    'https://twitch.tv/therujum');
 begin
 
   for i := 0 to Length(abouttext) - 1 do
@@ -259,6 +267,55 @@ begin
   BathMarkerImage.Width := (getISetting('bath') * 18);
 end;
 
+procedure TtamegatchiForm.updateFoodPanel;
+begin
+  FoodPanel.Visible := True;
+
+  FoodPanel.Width := PictoMenuPanel.Width;
+  FoodPanel.Height := 156;
+  FoodPanel.Top := PictoMenuPanel.Top + 50;
+  FoodPanel.Left := PictoMenuPanel.Left;
+
+  FoodImage1.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  FoodImage1.Left := 10;
+  FoodImage1.Top := 10;
+  FoodImage1.Height := 48;
+  FoodImage1.Width := 48;
+  FoodImage1.OnClick := @FeedClick;
+
+  FoodImage2.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  FoodImage2.Left := 10;
+  FoodImage2.Top := 10 + 48 + 10;
+  FoodImage2.Height := 48;
+  FoodImage2.Width := 48;
+
+  FoodImage3.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  FoodImage3.Left := FoodPanel.Width - 48 - 10;
+  FoodImage3.Top := 10;
+  FoodImage3.Height := 48;
+  FoodImage3.Width := 48;
+
+  FoodImage4.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  FoodImage4.Left := FoodPanel.Width - 48 - 10;
+  FoodImage4.Top := 10 + 48 + 10;
+  FoodImage4.Height := 48;
+  FoodImage4.Width := 48;
+end;
+
+procedure TtamegatchiForm.FeedClick(Sender: TObject);
+begin
+  case (Sender as TImage).GetNamePath of
+    'FoodImage1':
+      ;
+    'FoodImage2':
+      ;
+    'FoodImage3':
+      ;
+    'FoodImage4':
+      ;
+  end;
+end;
+
 procedure TtamegatchiForm.pictoHomeClick(Sender: TObject);
 var
   roomFromMenu: string;
@@ -272,9 +329,9 @@ begin
     'exit':
       Application.Terminate;
     'health':
-    begin
       updateHealthPanel;
-    end;
+    'food':
+      updateFoodPanel;
   end;
 
   if roomFromMenu <> 'exit' then
