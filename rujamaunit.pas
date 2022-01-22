@@ -275,28 +275,28 @@ begin
   FoodPanel.Top := PictoMenuPanel.Top + 50;
   FoodPanel.Left := PictoMenuPanel.Left;
 
-  FoodImage1.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  FoodImage1.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/food/0.png');
   FoodImage1.Left := 10;
   FoodImage1.Top := 10;
   FoodImage1.Height := 48;
   FoodImage1.Width := 48;
   FoodImage1.OnClick := @FeedClick;
 
-  FoodImage2.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  FoodImage2.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/food/1.png');
   FoodImage2.Left := 10;
   FoodImage2.Top := 10 + 48 + 10;
   FoodImage2.Height := 48;
   FoodImage2.Width := 48;
   FoodImage2.OnClick := @FeedClick;
 
-  FoodImage3.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  FoodImage3.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/food/2.png');
   FoodImage3.Left := FoodPanel.Width - 48 - 10;
   FoodImage3.Top := 10;
   FoodImage3.Height := 48;
   FoodImage3.Width := 48;
   FoodImage3.OnClick := @FeedClick;
 
-  FoodImage4.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  FoodImage4.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/food/3.png');
   FoodImage4.Left := FoodPanel.Width - 48 - 10;
   FoodImage4.Top := 10 + 48 + 10;
   FoodImage4.Height := 48;
