@@ -127,8 +127,8 @@ procedure TtamegatchiForm.FormCreate(Sender: TObject);
 var
   i: integer;
   mi: TMenuItem;
-  abouttext: array of string = ('Made for RuJAM 2022A', 'Graphics by Evel_Cult_Leader', 'Code by Earentir');
-  aboutlinks: array of string = ('https://rujam.top', 'https://twitch.tv/evel_cult_leader', 'https://twitch.tv/earentir');
+  abouttext: array of string = ('Made for RuJAM 2022A', 'Graphics by Evel_Cult_Leader', 'Code by Earentir','❤❤ Rujum ❤❤');
+  aboutlinks: array of string = ('https://rujam.top', 'https://twitch.tv/evel_cult_leader', 'https://twitch.tv/earentir','https://twitch.tv/therujum');
 begin
 
   for i := 0 to Length(abouttext) - 1 do
