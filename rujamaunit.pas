@@ -5,7 +5,7 @@ unit rujamaunit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, FileUtil;
 
 type
 
@@ -132,6 +132,24 @@ begin
   SetShape(maskpicture.Bitmap);
 end;
 
+function getFrames(objectName: string): TStringList;
+var
+  files: TStringList;
+  i: integer;
+begin
+  files := TStringList.Create;
+
+  FindAllFiles(files, getSSetting('imgrootpath') + objectName + PathDelim, '*.png', False);
+
+  Result := files;
+
+  for i := 0 to files.Count - 1 do
+  begin
+    writeln(files.Strings[i]);
+  end;
+
+end;
+
 function AnimateObject(objectName: string; index: integer): string;
 var
   imagefilename: array of string = ('default', 'skewl1', 'skewr1', 'move1', 'move2', 'move1', 'default', 'skewl1', 'skewr1');
@@ -179,6 +197,7 @@ begin
       HealthMarkerImage.Top := 128 + 59;
       writeln(settingList.Values['health']);
       HealthMarkerImage.Width := (StrToInt(settingList.Values['health']) * 18);
+      getFrames('cat\0\0\');
     end;
   end;
 
