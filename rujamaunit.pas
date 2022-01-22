@@ -121,7 +121,7 @@ end;
 
 procedure setISetting(setting: string; Value: integer);
 begin
-  settingList.Values[setting] := StrToInt(Value);
+  settingList.Values[setting] := IntToStr(Value);
 end;
 
 procedure TtamegatchiForm.contextMenuClick(Sender: TObject);
@@ -287,31 +287,35 @@ begin
   FoodImage2.Top := 10 + 48 + 10;
   FoodImage2.Height := 48;
   FoodImage2.Width := 48;
+  FoodImage2.OnClick := @FeedClick;
 
   FoodImage3.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
   FoodImage3.Left := FoodPanel.Width - 48 - 10;
   FoodImage3.Top := 10;
   FoodImage3.Height := 48;
   FoodImage3.Width := 48;
+  FoodImage3.OnClick := @FeedClick;
 
   FoodImage4.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
   FoodImage4.Left := FoodPanel.Width - 48 - 10;
   FoodImage4.Top := 10 + 48 + 10;
   FoodImage4.Height := 48;
   FoodImage4.Width := 48;
+  FoodImage4.OnClick := @FeedClick;
 end;
 
 procedure TtamegatchiForm.FeedClick(Sender: TObject);
 begin
+  writeln((Sender as TImage).GetNamePath);
   case (Sender as TImage).GetNamePath of
     'FoodImage1':
-      ;
+      setISetting('food', getISetting('food') + 1);
     'FoodImage2':
-      ;
+      setISetting('food', getISetting('food') + 2);
     'FoodImage3':
-      ;
+      setISetting('food', getISetting('food') + 3);
     'FoodImage4':
-      ;
+      setISetting('food', getISetting('food') + 4);
   end;
 end;
 
@@ -323,6 +327,7 @@ begin
   settingList.Values['Room'] := roomFromMenu;
 
   MarkerPanel.Visible := False;
+  FoodPanel.Visible := False;
 
   case roomFromMenu of
     'exit':
