@@ -166,7 +166,35 @@ object tamegatchiForm: TtamegatchiForm
     Proportional = True
     Stretch = True
   end
-  object MarkerImage: TImage
+  object HealthMarkerImage: TImage
+    Left = 64
+    Height = 9
+    Top = 91
+    Width = 15
+    Stretch = True
+  end
+  object FoodMarkerImage: TImage
+    Left = 64
+    Height = 9
+    Top = 91
+    Width = 15
+    Stretch = True
+  end
+  object BathMarkerImage: TImage
+    Left = 64
+    Height = 9
+    Top = 91
+    Width = 15
+    Stretch = True
+  end
+  object PlayMarkerImage: TImage
+    Left = 64
+    Height = 9
+    Top = 91
+    Width = 15
+    Stretch = True
+  end
+  object BookMarkerImage: TImage
     Left = 64
     Height = 9
     Top = 91
@@ -174,7 +202,7 @@ object tamegatchiForm: TtamegatchiForm
     Stretch = True
   end
   object MasterTimer: TTimer
-    Interval = 250
+    Interval = 1250
     OnTimer = MasterTimerTimer
     Left = 464
     Top = 16

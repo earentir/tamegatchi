@@ -13,7 +13,11 @@ type
 
   TtamegatchiForm = class(TForm)
     bgImage: TImage;
-    MarkerImage: TImage;
+    HealthMarkerImage: TImage;
+    FoodMarkerImage: TImage;
+    BathMarkerImage: TImage;
+    BookMarkerImage: TImage;
+    PlayMarkerImage: TImage;
     pictoHome1: TImage;
     PictoMenuPanel: TPanel;
     pictoHome10: TImage;
@@ -37,7 +41,8 @@ type
     procedure SpriteImageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure SpriteImageMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
   private
-
+    procedure InitializeSettings;
+    procedure PlayAnimation(objectName: string);
   public
 
   end;
@@ -48,7 +53,7 @@ var
   canMoveForm: boolean;
   mouseX, mouseY: integer;
   menuItems: array of string = ('home', 'health', 'food', 'yard', 'settings', 'bath', 'play', 'book', 'shop', 'exit');
-  imgRootPath: string;
+//imgRootPath: string;
 
 
 implementation
@@ -70,18 +75,11 @@ begin
     ((StrToInt(settingList.Values['play']) / 100) * 25) + ((StrToInt(settingList.Values['bath']) / 100) * 15));
 end;
 
-procedure TtamegatchiForm.FormCreate(Sender: TObject);
-var
-  i: integer;
+procedure TtamegatchiForm.InitializeSettings;
 begin
-  imgRootPath := GetCurrentDir + PathDelim + 'media' + PathDelim + 'img' + PathDelim;
-
-  bgImage.Picture.PNG.LoadFromFile(imgRootPath + 'bg-lcd-off.png');
-
   settingList := TStringList.Create;
   settingList.Values['Frame'] := IntToStr(0);
   settingList.Values['Room'] := 'home';
-  ScreensImage.Picture.PNG.LoadFromFile(imgRootPath + 'screens' + PathDelim + 'home.png');
 
   settingList.Values['timeunits'] := '0';
   settingList.Values['lifeticks'] := IntToStr(5 * 4);
@@ -92,10 +90,35 @@ begin
   settingList.Values['play'] := '1'; //25%  2    //0.2  // 4-6 = Good
   settingList.Values['bath'] := '1'; //15%  1.2  //0.2  // 6-8 = Excelent
 
+  settingList.Values['imgrootpath'] := GetCurrentDir + PathDelim + 'media' + PathDelim + 'img' + PathDelim;
+end;
+
+function getSSetting(setting: string): string;
+begin
+  Result := settingList.Values[setting];
+end;
+
+function getISetting(setting: string): integer;
+begin
+  Result := StrToInt(settingList.Values[setting]);
+end;
+
+procedure TtamegatchiForm.FormCreate(Sender: TObject);
+var
+  i: integer;
+begin
+  InitializeSettings;
+  //setup BG img
+  bgImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'bg-lcd-off.png');
+
+  //setup default room
+  ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim + 'home.png');
+
+  //Load Pictograms to menu items
   for i := 0 to PictoMenuPanel.ControlCount - 1 do
   begin
-    (PictoMenuPanel.Controls[i] as TImage).Picture.PNG.LoadFromFile(imgRootPath + 'pictograms' + PathDelim +
-      menuItems[StrToInt(Copy(PictoMenuPanel.Controls[i].GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
+    (PictoMenuPanel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'pictograms' +
+      PathDelim + menuItems[StrToInt(Copy(PictoMenuPanel.Controls[i].GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
   end;
 end;
 
@@ -105,7 +128,7 @@ var
   maskpicture: TPicture;
 begin
   maskpicture := TPicture.Create;
-  maskpicture.PNG.LoadFromFile(imgRootPath + 'bg-lcd-off.png');
+  maskpicture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'bg-lcd-off.png');
   SetShape(maskpicture.Bitmap);
 end;
 
@@ -115,21 +138,24 @@ var
 begin
   if StrToInt(settingList.Values['Frame']) < Length(imagefilename) then
   begin
-    Result := imgRootPath + objectName + PathDelim + imagefilename[index];
+    Result := getSSetting('imgrootpath') + objectName + PathDelim + imagefilename[index];
   end
   else
   begin
     settingList.Values['Frame'] := IntToStr(0);
-    Result := imgRootPath + objectName + PathDelim + imagefilename[0];
+    Result := getSSetting('imgrootpath') + objectName + PathDelim + imagefilename[0];
   end;
+end;
+
+procedure TtamegatchiForm.PlayAnimation(objectName: string);
+begin
+  SpriteImage.Picture.png.LoadFromFile(AnimateObject(objectName, getISetting('Frame')) + '.png');
+  ShadowImage.Picture.png.LoadFromFile(AnimateObject(objectName, getISetting('Frame')) + '-shadow' + '.png');
 end;
 
 procedure TtamegatchiForm.MasterTimerTimer(Sender: TObject);
 begin
-  //WriteLn(updateStats);
-
-  SpriteImage.Picture.png.LoadFromFile(AnimateObject('cat\0\0\', StrToInt(settingList.Values['Frame'])) + '.png');
-  ShadowImage.Picture.png.LoadFromFile(AnimateObject('cat\0\0\', StrToInt(settingList.Values['Frame'])) + '-shadow' + '.png');
+  PlayAnimation('cat\0\0\');
 
   settingList.Values['Frame'] := IntToStr(StrToInt(settingList.Values['Frame']) + 1);
   settingList.Values['timeunits'] := IntToStr(StrToInt(settingList.Values['timeunits']) + 1);
@@ -155,16 +181,16 @@ begin
         Application.Terminate;
       'health':
       begin
-        MarkerImage.Picture.PNG.LoadFromFile(imgRootPath + 'marker.png');
-        MarkerImage.Left := 128 + 67;
-        MarkerImage.Top := 128 + 59;
+        HealthMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+        HealthMarkerImage.Left := 128 + 67;
+        HealthMarkerImage.Top := 128 + 59;
         writeln(settingList.Values['health']);
-        MarkerImage.Width := (StrToInt(settingList.Values['health']) * 18);
+        HealthMarkerImage.Width := (StrToInt(settingList.Values['health']) * 18);
       end;
     end;
 
     if roomFromMenu <> 'exit' then
-      ScreensImage.Picture.PNG.LoadFromFile(imgRootPath + 'screens' + PathDelim +
+      ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim +
         menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
 
     settingList.Values['Room'] := roomFromMenu;
