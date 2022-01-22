@@ -44,6 +44,7 @@ type
   private
     procedure InitializeSettings;
     procedure PlayAnimation(objectName: string);
+    procedure updateHealthPanel;
   public
 
   end;
@@ -70,7 +71,7 @@ begin
   Result := FormatFloat('#.#', number);
 end;
 
-function updateStats: string;  // If < 4 then - 1/8 on lifetick, > 4 +1 1/8 on lifetick
+function getHealth: string;  // If < 4 then - 1/8 on lifetick, > 4 +1 1/8 on lifetick
 begin
   Result := fn((StrToInt(settingList.Values['food']) / 2) + ((StrToInt(settingList.Values['book']) / 100) * 10) +
     ((StrToInt(settingList.Values['play']) / 100) * 25) + ((StrToInt(settingList.Values['bath']) / 100) * 15));
@@ -192,10 +193,48 @@ procedure TtamegatchiForm.MasterTimerTimer(Sender: TObject);
 begin
   PlayAnimation('cat\0\0\');
 
-  settingList.Values['Frame'] := IntToStr(StrToInt(settingList.Values['Frame']) + 1);
-  settingList.Values['timeunits'] := IntToStr(StrToInt(settingList.Values['timeunits']) + 1);
+  settingList.Values['Frame'] := IntToStr(getISetting('Frame') + 1);
+  settingList.Values['timeunits'] := IntToStr(getISetting('timeunits') + 1);
 
-  updateStats;
+  if getISetting('timeunits') > getISetting('lifeticks') then
+  begin
+    settingList.Values['health'] := getHealth;
+  end;
+
+end;
+
+procedure TtamegatchiForm.updateHealthPanel;
+begin
+  MarkerPanel.Visible := True;
+  MarkerPanel.Width := 256;
+  MarkerPanel.Height := 156;
+  MarkerPanel.Top := PictoMenuPanel.Top + 50;
+  MarkerPanel.Left := PictoMenuPanel.Left;
+
+  HealthMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  HealthMarkerImage.Left := 66;
+  HealthMarkerImage.Top := 17;
+  HealthMarkerImage.Width := (getISetting('health') * 18);
+
+  FoodMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  FoodMarkerImage.Left := 66;
+  FoodMarkerImage.Top := 44;
+  FoodMarkerImage.Width := (getISetting('food') * 18);
+
+  PlayMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  PlayMarkerImage.Left := 66;
+  PlayMarkerImage.Top := 69;
+  PlayMarkerImage.Width := (getISetting('play') * 18);
+
+  BookMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  BookMarkerImage.Left := 66;
+  BookMarkerImage.Top := 94;
+  BookMarkerImage.Width := (getISetting('book') * 18);
+
+  BathMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  BathMarkerImage.Left := 66;
+  BathMarkerImage.Top := 121;
+  BathMarkerImage.Width := (getISetting('bath') * 18);
 end;
 
 procedure TtamegatchiForm.pictoHomeClick(Sender: TObject);
@@ -211,38 +250,7 @@ begin
       Application.Terminate;
     'health':
     begin
-
-      MarkerPanel.Visible := True;
-      MarkerPanel.Width := 256;
-      MarkerPanel.Height := 156;
-      MarkerPanel.Top := PictoMenuPanel.Top + 50;
-      MarkerPanel.Left := PictoMenuPanel.Left;
-
-
-      HealthMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-      HealthMarkerImage.Left := 66;
-      HealthMarkerImage.Top := 17;
-      HealthMarkerImage.Width := (getISetting('health') * 18);
-
-      FoodMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-      FoodMarkerImage.Left := 66;
-      FoodMarkerImage.Top := 44;
-      FoodMarkerImage.Width := (getISetting('food') * 18);
-
-      PlayMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-      PlayMarkerImage.Left := 66;
-      PlayMarkerImage.Top := 69;
-      PlayMarkerImage.Width := (getISetting('play') * 18);
-
-      BookMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-      BookMarkerImage.Left := 66;
-      BookMarkerImage.Top := 94;
-      BookMarkerImage.Width := (getISetting('book') * 18);
-
-      BathMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-      BathMarkerImage.Left := 66;
-      BathMarkerImage.Top := 121;
-      BathMarkerImage.Width := (getISetting('bath') * 18);
+      updateHealthPanel;
     end;
   end;
 
@@ -251,9 +259,6 @@ begin
       menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
 
   settingList.Values['Room'] := roomFromMenu;
-  //end;
-
-  settingList.Values['timeunits'];
 end;
 
 procedure TtamegatchiForm.SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
