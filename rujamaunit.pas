@@ -104,25 +104,24 @@ begin
   settingList.Values['imgrootpath'] := GetCurrentDir + PathDelim + 'media' + PathDelim + 'img' + PathDelim;
 end;
 
-//function getSetting(setting: string): string; overload;
-//begin
-//  Result := settingList.Values[setting];
-//end;
-//
-//function getSetting(setting: integer): integer; overload;
-//begin
-//  Result := StrToInt(settingList.Values[IntToStr(setting)]);
-//end;
-
-
 function getSSetting(setting: string): string;
 begin
   Result := settingList.Values[setting];
 end;
 
+procedure setSSetting(setting, Value: string);
+begin
+  settingList.Values[setting] := Value;
+end;
+
 function getISetting(setting: string): integer;
 begin
   Result := StrToInt(settingList.Values[setting]);
+end;
+
+procedure setISetting(setting: string; Value: integer);
+begin
+  settingList.Values[setting] := StrToInt(Value);
 end;
 
 procedure TtamegatchiForm.contextMenuClick(Sender: TObject);
