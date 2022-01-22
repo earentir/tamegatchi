@@ -221,4 +221,8 @@ object tamegatchiForm: TtamegatchiForm
     Left = 464
     Top = 16
   end
+  object contextMenu: TPopupMenu
+    Left = 384
+    Top = 28
+  end
 end

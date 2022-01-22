@@ -5,7 +5,7 @@ unit rujamaunit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, FileUtil;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus, FileUtil, LCLIntf;
 
 type
 
@@ -30,6 +30,7 @@ type
     pictoHome7: TImage;
     pictoHome8: TImage;
     pictoHome9: TImage;
+    contextMenu: TPopupMenu;
     ShadowImage: TImage;
     ScreensImage: TImage;
     SpriteImage: TImage;
@@ -45,6 +46,7 @@ type
     procedure InitializeSettings;
     procedure PlayAnimation(objectName: string);
     procedure updateHealthPanel;
+    procedure contextMenuClick(Sender: TObject);
   public
 
   end;
@@ -116,11 +118,32 @@ begin
   Result := StrToInt(settingList.Values[setting]);
 end;
 
+procedure TtamegatchiForm.contextMenuClick(Sender: TObject);
+begin
+  OpenURL((Sender as TMenuItem).Hint);
+end;
+
 procedure TtamegatchiForm.FormCreate(Sender: TObject);
 var
   i: integer;
+  mi: TMenuItem;
+  abouttext: array of string = ('Made for RuJAM 2022A', 'Graphics by Evel_Cult_Leader', 'Code by Earentir');
+  aboutlinks: array of string = ('https://rujam.top', 'https://twitch.tv/evel_cult_leader', 'https://twitch.tv/earentir');
 begin
+
+  for i := 0 to Length(abouttext) - 1 do
+  begin
+    mi := TMenuItem.Create(nil);
+    mi.Caption := abouttext[i];
+    mi.Hint := aboutlinks[i];
+    mi.Tag := i;
+    mi.OnClick := @contextMenuClick;
+    contextMenu.Items.Add(mi);
+  end;
+
+  //setup settings
   InitializeSettings;
+
   //setup BG img
   bgImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'bg-lcd-off.png');
 
@@ -200,7 +223,6 @@ begin
   begin
     settingList.Values['health'] := getHealth;
   end;
-
 end;
 
 procedure TtamegatchiForm.updateHealthPanel;
@@ -242,6 +264,7 @@ var
   roomFromMenu: string;
 begin
   roomFromMenu := menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1];
+  settingList.Values['Room'] := roomFromMenu;
 
   MarkerPanel.Visible := False;
 
@@ -257,12 +280,13 @@ begin
   if roomFromMenu <> 'exit' then
     ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim +
       menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
-
-  settingList.Values['Room'] := roomFromMenu;
 end;
 
 procedure TtamegatchiForm.SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 begin
+  if Button = mbRight then
+    contextMenu.PopUp(tamegatchiForm.Left + 128 + x, tamegatchiForm.Top + 128 + y);
+
   canMoveForm := True;
   mouseX := X;
   mouseY := Y;
