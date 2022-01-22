@@ -17,6 +17,7 @@ type
     FoodMarkerImage: TImage;
     BathMarkerImage: TImage;
     BookMarkerImage: TImage;
+    MarkerPanel: TPanel;
     PlayMarkerImage: TImage;
     pictoHome1: TImage;
     PictoMenuPanel: TPanel;
@@ -93,6 +94,17 @@ begin
   settingList.Values['imgrootpath'] := GetCurrentDir + PathDelim + 'media' + PathDelim + 'img' + PathDelim;
 end;
 
+//function getSetting(setting: string): string; overload;
+//begin
+//  Result := settingList.Values[setting];
+//end;
+//
+//function getSetting(setting: integer): integer; overload;
+//begin
+//  Result := StrToInt(settingList.Values[IntToStr(setting)]);
+//end;
+
+
 function getSSetting(setting: string): string;
 begin
   Result := settingList.Values[setting];
@@ -132,6 +144,7 @@ begin
   SetShape(maskpicture.Bitmap);
 end;
 
+
 function getFrames(objectName: string): TStringList;
 var
   files: TStringList;
@@ -156,7 +169,6 @@ var
   imagefilename: TStringList;
 begin
   imagefilename := TStringList.Create;
-
   imagefilename := getFrames(objectName);
 
   if getISetting('Frame') < imagefilename.Count - 1 then
@@ -192,16 +204,45 @@ var
 begin
   roomFromMenu := menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1];
 
+  MarkerPanel.Visible := False;
+
   case roomFromMenu of
     'exit':
       Application.Terminate;
     'health':
     begin
+
+      MarkerPanel.Visible := True;
+      MarkerPanel.Width := 256;
+      MarkerPanel.Height := 156;
+      MarkerPanel.Top := PictoMenuPanel.Top + 50;
+      MarkerPanel.Left := PictoMenuPanel.Left;
+
+
       HealthMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-      HealthMarkerImage.Left := 128 + 67;
-      HealthMarkerImage.Top := 128 + 59;
-      writeln(settingList.Values['health']);
-      HealthMarkerImage.Width := (StrToInt(settingList.Values['health']) * 18);
+      HealthMarkerImage.Left := 66;
+      HealthMarkerImage.Top := 17;
+      HealthMarkerImage.Width := (getISetting('health') * 18);
+
+      FoodMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+      FoodMarkerImage.Left := 66;
+      FoodMarkerImage.Top := 44;
+      FoodMarkerImage.Width := (getISetting('food') * 18);
+
+      PlayMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+      PlayMarkerImage.Left := 66;
+      PlayMarkerImage.Top := 69;
+      PlayMarkerImage.Width := (getISetting('play') * 18);
+
+      BookMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+      BookMarkerImage.Left := 66;
+      BookMarkerImage.Top := 94;
+      BookMarkerImage.Width := (getISetting('book') * 18);
+
+      BathMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+      BathMarkerImage.Left := 66;
+      BathMarkerImage.Top := 121;
+      BathMarkerImage.Width := (getISetting('bath') * 18);
     end;
   end;
 
