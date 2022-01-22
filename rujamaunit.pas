@@ -141,34 +141,39 @@ begin
 
   FindAllFiles(files, getSSetting('imgrootpath') + objectName + PathDelim, '*.png', False);
 
-  Result := files;
-
-  for i := 0 to files.Count - 1 do
+  for i := files.Count - 1 downto 0 do
   begin
-    writeln(files.Strings[i]);
+    files.Strings[i] := copy(files.Strings[i], 0, Length(files.Strings[i]) - Length(ExtractFileExt(files.Strings[i])));
+    if files.Strings[i].Contains('-shadow') then
+      files.Delete(i);
   end;
 
+  Result := files;
 end;
 
 function AnimateObject(objectName: string; index: integer): string;
 var
-  imagefilename: array of string = ('default', 'skewl1', 'skewr1', 'move1', 'move2', 'move1', 'default', 'skewl1', 'skewr1');
+  imagefilename: TStringList;
 begin
-  if StrToInt(settingList.Values['Frame']) < Length(imagefilename) then
+  imagefilename := TStringList.Create;
+
+  imagefilename := getFrames(objectName);
+
+  if getISetting('Frame') < imagefilename.Count - 1 then
   begin
-    Result := getSSetting('imgrootpath') + objectName + PathDelim + imagefilename[index];
+    Result := imagefilename.Strings[index];
   end
   else
   begin
     settingList.Values['Frame'] := IntToStr(0);
-    Result := getSSetting('imgrootpath') + objectName + PathDelim + imagefilename[0];
+    Result := imagefilename.Strings[0];
   end;
 end;
 
 procedure TtamegatchiForm.PlayAnimation(objectName: string);
 begin
   SpriteImage.Picture.png.LoadFromFile(AnimateObject(objectName, getISetting('Frame')) + '.png');
-  ShadowImage.Picture.png.LoadFromFile(AnimateObject(objectName, getISetting('Frame')) + '-shadow' + '.png');
+  ShadowImage.Picture.png.LoadFromFile(AnimateObject(objectName, getISetting('Frame')) + '-shadow.png');
 end;
 
 procedure TtamegatchiForm.MasterTimerTimer(Sender: TObject);
@@ -197,7 +202,6 @@ begin
       HealthMarkerImage.Top := 128 + 59;
       writeln(settingList.Values['health']);
       HealthMarkerImage.Width := (StrToInt(settingList.Values['health']) * 18);
-      getFrames('cat\0\0\');
     end;
   end;
 

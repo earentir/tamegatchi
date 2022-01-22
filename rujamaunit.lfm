@@ -202,7 +202,7 @@ object tamegatchiForm: TtamegatchiForm
     Stretch = True
   end
   object MasterTimer: TTimer
-    Interval = 1250
+    Interval = 250
     OnTimer = MasterTimerTimer
     Left = 464
     Top = 16
