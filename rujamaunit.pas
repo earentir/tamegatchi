@@ -169,32 +169,25 @@ var
 begin
   roomFromMenu := menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1];
 
-  if (roomFromMenu = settingList.Values['Room']) then
-  begin
-    ScreensImage.Picture.PNG.Clear;
-    settingList.Values['Room'] := 'home';
-  end
-  else
-  begin
-    case roomFromMenu of
-      'exit':
-        Application.Terminate;
-      'health':
-      begin
-        HealthMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-        HealthMarkerImage.Left := 128 + 67;
-        HealthMarkerImage.Top := 128 + 59;
-        writeln(settingList.Values['health']);
-        HealthMarkerImage.Width := (StrToInt(settingList.Values['health']) * 18);
-      end;
+  case roomFromMenu of
+    'exit':
+      Application.Terminate;
+    'health':
+    begin
+      HealthMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+      HealthMarkerImage.Left := 128 + 67;
+      HealthMarkerImage.Top := 128 + 59;
+      writeln(settingList.Values['health']);
+      HealthMarkerImage.Width := (StrToInt(settingList.Values['health']) * 18);
     end;
-
-    if roomFromMenu <> 'exit' then
-      ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim +
-        menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
-
-    settingList.Values['Room'] := roomFromMenu;
   end;
+
+  if roomFromMenu <> 'exit' then
+    ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim +
+      menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
+
+  settingList.Values['Room'] := roomFromMenu;
+  //end;
 
   settingList.Values['timeunits'];
 end;
