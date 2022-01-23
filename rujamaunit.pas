@@ -5,7 +5,7 @@ unit rujamaunit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus, FileUtil, LCLIntf;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus, FileUtil, LCLIntf, Math;
 
 type
   numarray = array of integer;
@@ -71,6 +71,7 @@ type
     procedure contextMenuClick(Sender: TObject);
     procedure actionClick(Sender: TObject);
     procedure updateActionPanel(panelname: string);
+    procedure DoAnimationPlay(animation: string);
   public
 
   end;
@@ -106,12 +107,21 @@ end;
 procedure TtamegatchiForm.InitializeSettings;
 begin
   settingList := TStringList.Create;
-  settingList.Values['Frame'] := IntToStr(0);
   settingList.Values['Room'] := 'home';
+
+  settingList.Values['Frame'] := IntToStr(0);
+  settingList.Values['animation'] := 'home';
+  settingList.Values['subanimation'] := '0';
+  settingList.Values['subanimationticks'] := '0';
+  settingList.Values['specialanimation'] := '';
+  settingList.Values['specialanimationticks'] := '0';
+  settingList.Values['specialanimationmaxticks'] := '20';
 
   settingList.Values['timeunits'] := '0';
   settingList.Values['lifeticks'] := IntToStr(5 * 4);
-  settingList.Values['growticks'] := '0';  //Reach 5 to get next gen
+  settingList.Values['healthtogrow'] := '6';
+  settingList.Values['growticks'] := '0';
+  settingList.Values['growstep'] := '5';  //Reach 5 to get next gen
 
   settingList.Values['health'] := '8'; // 4.6 (initial)
   settingList.Values['food'] := '1'; //50%  4    //0.5  //   0 = Dead
@@ -122,7 +132,6 @@ begin
   settingList.Values['gen'] := '0';
 
   settingList.Values['bg'] := 'bg-lcd-off';
-
   settingList.Values['imgrootpath'] := GetCurrentDir + PathDelim + 'media' + PathDelim + 'img' + PathDelim;
 end;
 
@@ -240,25 +249,135 @@ end;
 procedure TtamegatchiForm.PlayAnimation(objectName: string);
 var
   frameFileName: string;
+  topPadding: integer;
 begin
   frameFileName := AnimateObject(objectName, getISetting('Frame'));
+
+  case getSSetting('gen') of
+    '0':
+      topPadding := 60;
+    '1':
+      topPadding := 50;
+    '2':
+      topPadding := 15;
+  end;
+
+  SpriteImage.Top := 120 + topPadding;
+  ShadowImage.Top := 120 + topPadding;
 
   SpriteImage.Picture.png.LoadFromFile(frameFileName);
   ShadowImage.Picture.png.LoadFromFile(ExtractFilePath(frameFileName) + PathDelim + 'shadow' + PathDelim +
     ExtractFileName(frameFileName));
 end;
 
+procedure TtamegatchiForm.DoAnimationPlay(animation: string);
+var
+  randomNum: integer;
+begin
+
+  //randomize animation if more than one exists
+  if getISetting('subanimation') = 0 then
+  begin
+    Randomize;
+    randomNum := RandomRange(1, 200);
+    writeln('gen ran');
+  end;
+
+  if getISetting('subanimationticks') = 0 then
+  begin
+    if getSSetting('animation') = 'home' then
+    begin
+      writeln('home ', randomNum);
+      if (randomNum > 1) and (randomNum < 150) then
+      begin
+        setSSetting('subanimation', '0');
+        setISetting('subanimationticks', 20);
+        writeln('l', randomNum);
+      end;
+
+      if (randomNum >= 150) and (randomNum < 190) then
+      begin
+        setSSetting('subanimation', '1');
+        setISetting('subanimationticks', 40);
+        writeln('m', randomNum);
+      end;
+
+      if (randomNum >= 190) and (randomNum <= 200) then
+      begin
+        setSSetting('subanimation', '2');
+        setISetting('subanimationticks', 20);
+        writeln('h', randomNum);
+      end;
+    end;
+  end;
+
+  if getISetting('subanimationticks') > 0 then
+  begin
+    writeln('decr ', getISetting('subanimationticks'));
+    setISetting('subanimationticks', getISetting('subanimationticks') - 1);
+  end
+  else
+  begin
+    setISetting('subanimation', 0);
+    setISetting('subanimationticks', 0);
+    writeln('reset ', getISetting('subanimation'), getISetting('subanimationticks'));
+  end;
+
+  //Choose What To Play
+  if (getSSetting('specialanimation') = '') and (getSSetting('animation') = 'home') then
+  begin
+    PlayAnimation('cat' + PathDelim + getSSetting('gen') + PathDelim + getSSetting('animation') + PathDelim +
+      getSSetting('subanimation') + PathDelim);
+  end
+  else
+  begin
+    if getISetting('specialanimationticks') <= getISetting('specialanimationmaxticks') then
+    begin
+      PlayAnimation('cat' + PathDelim + getSSetting('gen') + PathDelim + getSSetting('specialanimation') +
+        PathDelim + getSSetting('subanimation') + PathDelim);
+    end
+    else
+    begin
+      setISetting('specialanimationticks', 0);
+      setSSetting('specialanimation', '');
+    end;
+  end;
+end;
+
 procedure TtamegatchiForm.MasterTimerTimer(Sender: TObject);
 begin
-  PlayAnimation('cat\' + getSSetting('gen') + '\food\');
+
+  //Choose Animation
+  DoAnimationPlay('cat' + getSSetting('gen'));
+  //PlayAnimation('cat\' + getSSetting('gen') + '\default\0\');
 
   settingList.Values['Frame'] := IntToStr(getISetting('Frame') + 1);
   settingList.Values['timeunits'] := IntToStr(getISetting('timeunits') + 1);
 
+  //Update Health
   if getISetting('timeunits') > getISetting('lifeticks') then
   begin
     settingList.Values['health'] := getHealth;
   end;
+
+  //set GrowTicks
+  if (getISetting('health') > getISetting('healthtogrow')) and (getISetting('gen') < 2) then
+  begin
+    if (getISetting('timeunits') mod 5) = 0 then
+    begin
+      //writeln('we grew to ', getISetting('growticks'));
+      setISetting('growticks', getISetting('growticks') + 1);
+    end;
+  end;
+
+  //Advance if we have enough growticks
+  if (getISetting('gen') < 2) and (getISetting('growticks') >= getISetting('growstep')) then
+  begin
+    //writeln('advanced to ', getISetting('gen'));
+    setISetting('gen', getISetting('gen') + 1);
+    setISetting('growticks', 0);
+  end;
+
 end;
 
 procedure TtamegatchiForm.updateHealthPanel;
