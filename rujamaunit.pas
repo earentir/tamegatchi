@@ -230,9 +230,14 @@ begin
 end;
 
 procedure TtamegatchiForm.PlayAnimation(objectName: string);
+var
+  frameFileName: string;
 begin
-  SpriteImage.Picture.png.LoadFromFile(AnimateObject(objectName, getISetting('Frame')) + '.png');
-  ShadowImage.Picture.png.LoadFromFile(AnimateObject(objectName, getISetting('Frame')) + '-shadow.png');
+  frameFileName := AnimateObject(objectName, getISetting('Frame'));
+
+  SpriteImage.Picture.png.LoadFromFile(frameFileName + '.png');
+  ShadowImage.Picture.png.LoadFromFile(ExtractFilePath(frameFileName) + PathDelim + 'shadow' + PathDelim +
+    ExtractFileName(frameFileName) + '.png');
 end;
 
 procedure TtamegatchiForm.MasterTimerTimer(Sender: TObject);
