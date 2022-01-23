@@ -34,7 +34,6 @@ type
     PlayMarkerImage: TImage;
     pictoHome1: TImage;
     PictoMenuPanel: TPanel;
-    pictoHome10: TImage;
     pictoHome2: TImage;
     pictoHome3: TImage;
     pictoHome4: TImage;
@@ -42,7 +41,6 @@ type
     pictoHome6: TImage;
     pictoHome7: TImage;
     pictoHome8: TImage;
-    pictoHome9: TImage;
     contextMenu: TPopupMenu;
     FoodImage3: TImage;
     BookPanel: TPanel;
@@ -74,7 +72,7 @@ var
   settingList: TStringList;
   canMoveForm: boolean;
   mouseX, mouseY: integer;
-  menuItems: array of string = ('home', 'health', 'food', 'yard', 'settings', 'bath', 'play', 'book', 'shop', 'exit');
+  menuItems: array of string = ('home', 'health', 'food', 'settings', 'bath', 'play', 'book', 'exit');
 //imgRootPath: string;
 
 
@@ -261,7 +259,7 @@ begin
     begin
       (HealthPanel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
       (HealthPanel.Controls[i] as TImage).Left := 74;
-      (HealthPanel.Controls[i] as TImage).Top := 28 + (i * 25);
+      (HealthPanel.Controls[i] as TImage).Top := 26 + (i * 25);
       (HealthPanel.Controls[i] as TImage).Width := (getISetting(HealthPanel.Controls[i].Name.Replace('MarkerImage', '').ToLower) * 18);
     end;
   end;
