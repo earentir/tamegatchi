@@ -12,6 +12,11 @@ type
   { TtamegatchiForm }
 
   TtamegatchiForm = class(TForm)
+    BathImage1: TImage;
+    BathImage2: TImage;
+    BathImage3: TImage;
+    BathImage4: TImage;
+    BathPanel: TPanel;
     FoodImage2: TImage;
     bgImage: TImage;
     FoodImage4: TImage;
@@ -336,13 +341,19 @@ end;
 procedure TtamegatchiForm.pictoHomeClick(Sender: TObject);
 var
   roomFromMenu: string;
+  i: integer;
 begin
   roomFromMenu := menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1];
   settingList.Values['Room'] := roomFromMenu;
 
-  //ToDo: Make this a generic proc
-  HealthPanel.Visible := False;
-  FoodPanel.Visible := False;
+  for i := 0 to tamegatchiForm.ControlCount - 1 do
+  begin
+    if (tamegatchiForm.Controls[i].ClassName = 'TPanel') then
+    begin
+      if (tamegatchiForm.Controls[i].GetNamePath <> 'PictoMenuPanel') then
+        (tamegatchiForm.Controls[i] as TPanel).Visible := False;
+    end;
+  end;
 
   case roomFromMenu of
     'exit':
