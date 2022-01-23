@@ -16,6 +16,15 @@ type
     bgImage: TImage;
     FoodImage4: TImage;
     FoodImage1: TImage;
+    PlayImage1: TImage;
+    PlayImage2: TImage;
+    PlayImage3: TImage;
+    PlayImage4: TImage;
+    BookImage1: TImage;
+    BookImage2: TImage;
+    BookImage3: TImage;
+    BookImage4: TImage;
+    PlayPanel: TPanel;
     HealthMarkerImage: TImage;
     FoodMarkerImage: TImage;
     BathMarkerImage: TImage;
@@ -36,6 +45,7 @@ type
     pictoHome9: TImage;
     contextMenu: TPopupMenu;
     FoodImage3: TImage;
+    BookPanel: TPanel;
     ShadowImage: TImage;
     ScreensImage: TImage;
     SpriteImage: TImage;
@@ -44,6 +54,7 @@ type
     procedure FormPaint(Sender: TObject);
     procedure MasterTimerTimer(Sender: TObject);
     procedure pictoHomeClick(Sender: TObject);
+    procedure PictoMenuPanelDblClick(Sender: TObject);
     procedure SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
     procedure SpriteImageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: integer);
     procedure SpriteImageMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
@@ -101,6 +112,8 @@ begin
   settingList.Values['play'] := '1'; //25%  2    //0.2  // 4-6 = Good
   settingList.Values['bath'] := '1'; //15%  1.2  //0.2  // 6-8 = Excelent
 
+  settingList.Values['bg'] := 'bg-lcd-off';
+
   settingList.Values['imgrootpath'] := GetCurrentDir + PathDelim + 'media' + PathDelim + 'img' + PathDelim;
 end;
 
@@ -152,7 +165,7 @@ begin
   InitializeSettings;
 
   //setup BG img
-  bgImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'bg-lcd-off.png');
+  bgImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + getSSetting('bg') + '.png');
 
   //setup default room
   ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim + 'home.png');
@@ -171,7 +184,7 @@ var
   maskpicture: TPicture;
 begin
   maskpicture := TPicture.Create;
-  maskpicture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'bg-lcd-off.png');
+  maskpicture.PNG.LoadFromFile(getSSetting('imgrootpath') + getSSetting('bg') + '.png');
   SetShape(maskpicture.Bitmap);
 end;
 
@@ -287,7 +300,8 @@ begin
     begin
       if (panel.Controls[i].ClassType.ClassName = 'TImage') then
       begin
-        (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/food/' + IntToStr(i) + '.png');
+        (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/' +
+          panelname.ToLower + '/' + IntToStr(i) + '.png');
 
         if i <= 1 then
           (panel.Controls[i] as TImage).Left := 10
@@ -345,6 +359,16 @@ begin
 
   if (roomFromMenu <> 'exit') and (roomFromMenu <> 'health') then
     updateActionPanel(roomFromMenu);
+end;
+
+procedure TtamegatchiForm.PictoMenuPanelDblClick(Sender: TObject);
+begin
+  if getSSetting('bg') = 'bg-lcd-on' then
+    setSSetting('bg', 'bg-lcd-off')
+  else
+    setSSetting('bg', 'bg-lcd-on');
+
+  bgImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + getSSetting('bg') + '.png');
 end;
 
 procedure TtamegatchiForm.SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
