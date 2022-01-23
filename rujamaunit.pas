@@ -52,7 +52,7 @@ type
     procedure PlayAnimation(objectName: string);
     procedure updateHealthPanel;
     procedure contextMenuClick(Sender: TObject);
-    procedure FeedClick(Sender: TObject);
+    procedure actionClick(Sender: TObject);
     procedure updateActionPanel(panelname: string);
   public
 
@@ -259,10 +259,15 @@ var
   i: integer;
   panel: TPanel;
 begin
+  panelname := panelname.ToUpper.Substring(0, 1) + panelname.ToLower.Substring(1, Length(panelname));
+
   for i := 0 to tamegatchiForm.ControlCount - 1 do
   begin
     if (tamegatchiForm.Controls[i].ClassName = 'TPanel') then
     begin
+      if (tamegatchiForm.Controls[i].GetNamePath <> 'PictoMenuPanel') then
+        (tamegatchiForm.Controls[i] as TPanel).Visible := False;
+
       if (tamegatchiForm.Controls[i].GetNamePath.Contains(panelname)) then
       begin
         panel := (tamegatchiForm.Controls[i] as TPanel);
@@ -296,27 +301,24 @@ begin
 
         (panel.Controls[i] as TImage).Height := 48;
         (panel.Controls[i] as TImage).Width := 48;
-        (panel.Controls[i] as TImage).OnClick := @FeedClick;
+        (panel.Controls[i] as TImage).OnClick := @ActionClick;
       end;
     end;
-  finally
-    //panel.Free;
+  except
+    Writeln('Panel ' + panelname + ' not found.')
   end;
 end;
 
-procedure TtamegatchiForm.FeedClick(Sender: TObject);
+procedure TtamegatchiForm.actionClick(Sender: TObject);
+var
+  settingname: string;
+  settingindex: integer;
 begin
-  writeln((Sender as TImage).GetNamePath);
-  case (Sender as TImage).GetNamePath of
-    'FoodImage1':
-      setISetting('food', getISetting('food') + 1);
-    'FoodImage2':
-      setISetting('food', getISetting('food') + 2);
-    'FoodImage3':
-      setISetting('food', getISetting('food') + 3);
-    'FoodImage4':
-      setISetting('food', getISetting('food') + 4);
-  end;
+  settingindex := StrToInt(copy((Sender as TImage).GetNamePath, Length((Sender as TImage).GetNamePath), 1));
+  settingname := copy((Sender as TImage).GetNamePath.Replace('Image', ''), 0, Length(
+    (Sender as TImage).GetNamePath.Replace('Image', '')) - 1).ToLower;
+
+  setISetting(settingname, getISetting(settingname) + settingindex);
 end;
 
 procedure TtamegatchiForm.pictoHomeClick(Sender: TObject);
@@ -326,6 +328,7 @@ begin
   roomFromMenu := menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1];
   settingList.Values['Room'] := roomFromMenu;
 
+  //ToDo: Make this a generic proc
   HealthPanel.Visible := False;
   FoodPanel.Visible := False;
 
@@ -334,13 +337,14 @@ begin
       Application.Terminate;
     'health':
       updateHealthPanel;
-    'food':
-      updateActionPanel('Food');
   end;
 
   if roomFromMenu <> 'exit' then
     ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim +
       menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
+
+  if (roomFromMenu <> 'exit') and (roomFromMenu <> 'health') then
+    updateActionPanel(roomFromMenu);
 end;
 
 procedure TtamegatchiForm.SpriteImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
