@@ -233,6 +233,8 @@ begin
 end;
 
 procedure TtamegatchiForm.updateHealthPanel;
+var
+  i: integer;
 begin
   MarkerPanel.Visible := True;
   MarkerPanel.Width := 256;
@@ -240,30 +242,42 @@ begin
   MarkerPanel.Top := PictoMenuPanel.Top + 50;
   MarkerPanel.Left := PictoMenuPanel.Left;
 
-  HealthMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-  HealthMarkerImage.Left := 66;
-  HealthMarkerImage.Top := 17;
-  HealthMarkerImage.Width := (getISetting('health') * 18);
 
-  FoodMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-  FoodMarkerImage.Left := 66;
-  FoodMarkerImage.Top := 44;
-  FoodMarkerImage.Width := (getISetting('food') * 18);
+  for i := 0 to MarkerPanel.ControlCount - 1 do
+  begin
+    if (MarkerPanel.Controls[i].Name.Contains('MarkerImage')) and (MarkerPanel.Controls[i].ClassType.ClassName = 'TImage') then
+    begin
+      (MarkerPanel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+      (MarkerPanel.Controls[i] as TImage).Left := 74;
+      (MarkerPanel.Controls[i] as TImage).Top := 28 + (i * 25);
+      (MarkerPanel.Controls[i] as TImage).Width := (getISetting(MarkerPanel.Controls[i].Name.Replace('MarkerImage', '').ToLower) * 18);
+    end;
+  end;
 
-  PlayMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-  PlayMarkerImage.Left := 66;
-  PlayMarkerImage.Top := 69;
-  PlayMarkerImage.Width := (getISetting('play') * 18);
+  //HealthMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  //HealthMarkerImage.Left := 74;
+  //HealthMarkerImage.Top := 28;
+  //HealthMarkerImage.Width := (getISetting('food') * 18);
+  //
+  //FoodMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  //FoodMarkerImage.Left := 74;
+  //FoodMarkerImage.Top := 53;
+  //FoodMarkerImage.Width := (getISetting('food') * 18);
 
-  BookMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-  BookMarkerImage.Left := 66;
-  BookMarkerImage.Top := 94;
-  BookMarkerImage.Width := (getISetting('book') * 18);
-
-  BathMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-  BathMarkerImage.Left := 66;
-  BathMarkerImage.Top := 121;
-  BathMarkerImage.Width := (getISetting('bath') * 18);
+  //PlayMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  //PlayMarkerImage.Left := 74;
+  //PlayMarkerImage.Top := 69;
+  //PlayMarkerImage.Width := (getISetting('play') * 18);
+  //
+  //BookMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  //BookMarkerImage.Left := 66;
+  //BookMarkerImage.Top := 94;
+  //BookMarkerImage.Width := (getISetting('book') * 18);
+  //
+  //BathMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+  //BathMarkerImage.Left := 66;
+  //BathMarkerImage.Top := 121;
+  //BathMarkerImage.Width := (getISetting('bath') * 18);
 end;
 
 procedure TtamegatchiForm.updateFoodPanel;
