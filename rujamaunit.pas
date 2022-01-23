@@ -273,6 +273,7 @@ end;
 procedure TtamegatchiForm.DoAnimationPlay(animation: string);
 var
   randomNum: integer;
+  dirList: TStringList;
 begin
 
   //randomize animation if more than one exists
@@ -280,47 +281,52 @@ begin
   begin
     Randomize;
     randomNum := RandomRange(1, 200);
-    writeln('gen ran');
   end;
 
+  dirList := TStringList.Create;
+  FindAllDirectories(dirList, getSSetting('imgrootpath') + 'cat' + PathDelim + getSSetting('gen') + PathDelim +
+    getSSetting('animation') + PathDelim, False);
+
+  //Randomly Play an animation following
   if getISetting('subanimationticks') = 0 then
   begin
-    if getSSetting('animation') = 'home' then
+    if (dirList.Count > 0) then
     begin
-      writeln('home ', randomNum);
       if (randomNum > 1) and (randomNum < 150) then
       begin
         setSSetting('subanimation', '0');
         setISetting('subanimationticks', 20);
-        writeln('l', randomNum);
       end;
+    end;
 
+    if (dirList.Count > 1) then
+    begin
       if (randomNum >= 150) and (randomNum < 190) then
       begin
         setSSetting('subanimation', '1');
         setISetting('subanimationticks', 40);
-        writeln('m', randomNum);
       end;
+    end;
 
+    if (dirList.Count > 2) then
+    begin
       if (randomNum >= 190) and (randomNum <= 200) then
       begin
         setSSetting('subanimation', '2');
         setISetting('subanimationticks', 20);
-        writeln('h', randomNum);
       end;
     end;
   end;
 
+  //reset subanimations
   if getISetting('subanimationticks') > 0 then
   begin
-    writeln('decr ', getISetting('subanimationticks'));
     setISetting('subanimationticks', getISetting('subanimationticks') - 1);
   end
   else
   begin
     setISetting('subanimation', 0);
     setISetting('subanimationticks', 0);
-    writeln('reset ', getISetting('subanimation'), getISetting('subanimationticks'));
   end;
 
   //Choose What To Play
@@ -335,6 +341,8 @@ begin
     begin
       PlayAnimation('cat' + PathDelim + getSSetting('gen') + PathDelim + getSSetting('specialanimation') +
         PathDelim + getSSetting('subanimation') + PathDelim);
+      setISetting('specialanimationticks', getISetting('specialanimationticks') + 1);
+      writeln(getISetting('specialanimationticks'), ' ', getISetting('specialanimationmaxticks'));
     end
     else
     begin
@@ -349,7 +357,6 @@ begin
 
   //Choose Animation
   DoAnimationPlay('cat' + getSSetting('gen'));
-  //PlayAnimation('cat\' + getSSetting('gen') + '\default\0\');
 
   settingList.Values['Frame'] := IntToStr(getISetting('Frame') + 1);
   settingList.Values['timeunits'] := IntToStr(getISetting('timeunits') + 1);
@@ -468,6 +475,8 @@ begin
     (Sender as TImage).GetNamePath.Replace('Image', '')) - 1).ToLower;
 
   setISetting(settingname, getISetting(settingname) + settingindex);
+
+  setSSetting('specialanimation', settingname);
 end;
 
 procedure TtamegatchiForm.pictoHomeClick(Sender: TObject);
