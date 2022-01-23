@@ -28,8 +28,6 @@ object tamegatchiForm: TtamegatchiForm
     Top = 122
     Width = 255
     Center = True
-    Proportional = True
-    Stretch = True
   end
   object SpriteImage: TImage
     Left = 128
@@ -40,8 +38,6 @@ object tamegatchiForm: TtamegatchiForm
     OnMouseDown = SpriteImageMouseDown
     OnMouseMove = SpriteImageMouseMove
     OnMouseUp = SpriteImageMouseUp
-    Proportional = True
-    Stretch = True
   end
   object PictoMenuPanel: TPanel
     Left = 128

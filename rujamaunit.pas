@@ -8,6 +8,9 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus, FileUtil, LCLIntf;
 
 type
+  numarray = array of integer;
+
+type
 
   { TtamegatchiForm }
 
@@ -108,12 +111,15 @@ begin
 
   settingList.Values['timeunits'] := '0';
   settingList.Values['lifeticks'] := IntToStr(5 * 4);
+  settingList.Values['growticks'] := '0';  //Reach 5 to get next gen
 
   settingList.Values['health'] := '8'; // 4.6 (initial)
   settingList.Values['food'] := '1'; //50%  4    //0.5  //   0 = Dead
   settingList.Values['book'] := '1'; //10%  0.4  //0.1  // 1-3 = Bad
   settingList.Values['play'] := '1'; //25%  2    //0.2  // 4-6 = Good
   settingList.Values['bath'] := '1'; //15%  1.2  //0.2  // 6-8 = Excelent
+
+  settingList.Values['gen'] := '0';
 
   settingList.Values['bg'] := 'bg-lcd-off';
 
@@ -132,7 +138,8 @@ end;
 
 function getISetting(setting: string): integer;
 begin
-  Result := StrToInt(settingList.Values[setting]);
+  Result :=
+    Round(StrToFloat(settingList.Values[setting]));
 end;
 
 procedure setISetting(setting: string; Value: integer);
@@ -194,21 +201,22 @@ end;
 
 function getFrames(objectName: string): TStringList;
 var
-  files: TStringList;
+  files, newfiles: TStringList;
   i: integer;
+  path: string;
 begin
   files := TStringList.Create;
+  newfiles := TStringList.Create;
 
-  FindAllFiles(files, getSSetting('imgrootpath') + objectName + PathDelim, '*.png', False);
+  FindAllFiles(files, getSSetting('imgrootpath') + objectName, '*.png', False);
+  path := ExtractFilePath(files[0]);
 
-  for i := files.Count - 1 downto 0 do
+  for i := 0 to files.Count - 1 do
   begin
-    files.Strings[i] := copy(files.Strings[i], 0, Length(files.Strings[i]) - Length(ExtractFileExt(files.Strings[i])));
-    if files.Strings[i].Contains('-shadow') then
-      files.Delete(i);
+    newfiles.Add(path + IntToStr(i) + '.png');
   end;
 
-  Result := files;
+  Result := newfiles;
 end;
 
 function AnimateObject(objectName: string; index: integer): string;
@@ -235,14 +243,14 @@ var
 begin
   frameFileName := AnimateObject(objectName, getISetting('Frame'));
 
-  SpriteImage.Picture.png.LoadFromFile(frameFileName + '.png');
+  SpriteImage.Picture.png.LoadFromFile(frameFileName);
   ShadowImage.Picture.png.LoadFromFile(ExtractFilePath(frameFileName) + PathDelim + 'shadow' + PathDelim +
-    ExtractFileName(frameFileName) + '.png');
+    ExtractFileName(frameFileName));
 end;
 
 procedure TtamegatchiForm.MasterTimerTimer(Sender: TObject);
 begin
-  PlayAnimation('cat\0\0\');
+  PlayAnimation('cat\' + getSSetting('gen') + '\food\');
 
   settingList.Values['Frame'] := IntToStr(getISetting('Frame') + 1);
   settingList.Values['timeunits'] := IntToStr(getISetting('timeunits') + 1);
