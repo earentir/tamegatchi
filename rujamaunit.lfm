@@ -157,7 +157,7 @@ object tamegatchiForm: TtamegatchiForm
       StretchInEnabled = False
     end
   end
-  object MarkerPanel: TPanel
+  object HealthPanel: TPanel
     Left = 16
     Height = 50
     Top = 16
@@ -170,6 +170,13 @@ object tamegatchiForm: TtamegatchiForm
     OnMouseDown = SpriteImageMouseDown
     OnMouseMove = SpriteImageMouseMove
     OnMouseUp = SpriteImageMouseUp
+    object HealthMarkerImage: TImage
+      Left = 64
+      Height = 9
+      Top = 40
+      Width = 15
+      Stretch = True
+    end
     object FoodMarkerImage: TImage
       Left = 64
       Height = 9
@@ -177,31 +184,24 @@ object tamegatchiForm: TtamegatchiForm
       Width = 15
       Stretch = True
     end
-    object BathMarkerImage: TImage
+    object PlayMarkerImage: TImage
       Left = 64
       Height = 9
       Top = 10
       Width = 15
       Stretch = True
     end
-    object PlayMarkerImage: TImage
+    object BookMarkerImage: TImage
       Left = 64
       Height = 9
       Top = 20
       Width = 15
       Stretch = True
     end
-    object BookMarkerImage: TImage
+    object BathMarkerImage: TImage
       Left = 64
       Height = 9
       Top = 30
-      Width = 15
-      Stretch = True
-    end
-    object HealthMarkerImage: TImage
-      Left = 64
-      Height = 9
-      Top = 40
       Width = 15
       Stretch = True
     end

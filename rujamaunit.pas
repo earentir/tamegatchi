@@ -20,7 +20,7 @@ type
     FoodMarkerImage: TImage;
     BathMarkerImage: TImage;
     BookMarkerImage: TImage;
-    MarkerPanel: TPanel;
+    HealthPanel: TPanel;
     FoodPanel: TPanel;
     PlayMarkerImage: TImage;
     pictoHome1: TImage;
@@ -52,8 +52,8 @@ type
     procedure PlayAnimation(objectName: string);
     procedure updateHealthPanel;
     procedure contextMenuClick(Sender: TObject);
-    procedure updateFoodPanel;
     procedure FeedClick(Sender: TObject);
+    procedure updateActionPanel(panelname: string);
   public
 
   end;
@@ -236,86 +236,72 @@ procedure TtamegatchiForm.updateHealthPanel;
 var
   i: integer;
 begin
-  MarkerPanel.Visible := True;
-  MarkerPanel.Width := 256;
-  MarkerPanel.Height := 156;
-  MarkerPanel.Top := PictoMenuPanel.Top + 50;
-  MarkerPanel.Left := PictoMenuPanel.Left;
+  HealthPanel.Visible := True;
+  HealthPanel.Width := PictoMenuPanel.Width;
+  HealthPanel.Height := 156;
+  HealthPanel.Top := PictoMenuPanel.Top + 50;
+  HealthPanel.Left := PictoMenuPanel.Left;
 
-
-  for i := 0 to MarkerPanel.ControlCount - 1 do
+  for i := 0 to HealthPanel.ControlCount - 1 do
   begin
-    if (MarkerPanel.Controls[i].Name.Contains('MarkerImage')) and (MarkerPanel.Controls[i].ClassType.ClassName = 'TImage') then
+    if (HealthPanel.Controls[i].Name.Contains('MarkerImage')) and (HealthPanel.Controls[i].ClassType.ClassName = 'TImage') then
     begin
-      (MarkerPanel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-      (MarkerPanel.Controls[i] as TImage).Left := 74;
-      (MarkerPanel.Controls[i] as TImage).Top := 28 + (i * 25);
-      (MarkerPanel.Controls[i] as TImage).Width := (getISetting(MarkerPanel.Controls[i].Name.Replace('MarkerImage', '').ToLower) * 18);
+      (HealthPanel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
+      (HealthPanel.Controls[i] as TImage).Left := 74;
+      (HealthPanel.Controls[i] as TImage).Top := 28 + (i * 25);
+      (HealthPanel.Controls[i] as TImage).Width := (getISetting(HealthPanel.Controls[i].Name.Replace('MarkerImage', '').ToLower) * 18);
+    end;
+  end;
+end;
+
+procedure TtamegatchiForm.updateActionPanel(panelname: string);
+var
+  i: integer;
+  panel: TPanel;
+begin
+  for i := 0 to tamegatchiForm.ControlCount - 1 do
+  begin
+    if (tamegatchiForm.Controls[i].ClassName = 'TPanel') then
+    begin
+      if (tamegatchiForm.Controls[i].GetNamePath.Contains(panelname)) then
+      begin
+        panel := (tamegatchiForm.Controls[i] as TPanel);
+      end;
     end;
   end;
 
-  //HealthMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-  //HealthMarkerImage.Left := 74;
-  //HealthMarkerImage.Top := 28;
-  //HealthMarkerImage.Width := (getISetting('food') * 18);
-  //
-  //FoodMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-  //FoodMarkerImage.Left := 74;
-  //FoodMarkerImage.Top := 53;
-  //FoodMarkerImage.Width := (getISetting('food') * 18);
+  try
+    panel.Visible := True;
 
-  //PlayMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-  //PlayMarkerImage.Left := 74;
-  //PlayMarkerImage.Top := 69;
-  //PlayMarkerImage.Width := (getISetting('play') * 18);
-  //
-  //BookMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-  //BookMarkerImage.Left := 66;
-  //BookMarkerImage.Top := 94;
-  //BookMarkerImage.Width := (getISetting('book') * 18);
-  //
-  //BathMarkerImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'marker.png');
-  //BathMarkerImage.Left := 66;
-  //BathMarkerImage.Top := 121;
-  //BathMarkerImage.Width := (getISetting('bath') * 18);
-end;
+    panel.Width := PictoMenuPanel.Width;
+    panel.Height := 156;
+    panel.Top := PictoMenuPanel.Top + 50;
+    panel.Left := PictoMenuPanel.Left;
 
-procedure TtamegatchiForm.updateFoodPanel;
-begin
-  FoodPanel.Visible := True;
+    for i := 0 to panel.ControlCount - 1 do
+    begin
+      if (panel.Controls[i].ClassType.ClassName = 'TImage') then
+      begin
+        (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/food/' + IntToStr(i) + '.png');
 
-  FoodPanel.Width := PictoMenuPanel.Width;
-  FoodPanel.Height := 156;
-  FoodPanel.Top := PictoMenuPanel.Top + 50;
-  FoodPanel.Left := PictoMenuPanel.Left;
+        if i <= 1 then
+          (panel.Controls[i] as TImage).Left := 10
+        else
+          (panel.Controls[i] as TImage).Left := panel.Width - 48 - 10;
 
-  FoodImage1.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/food/0.png');
-  FoodImage1.Left := 10;
-  FoodImage1.Top := 10;
-  FoodImage1.Height := 48;
-  FoodImage1.Width := 48;
-  FoodImage1.OnClick := @FeedClick;
+        if i <= 1 then
+          (panel.Controls[i] as TImage).Top := 10 + (i * 10) + (i * 48)
+        else
+          (panel.Controls[i] as TImage).Top := 10 + ((i - 2) * 10) + ((i - 2) * 48);
 
-  FoodImage2.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/food/1.png');
-  FoodImage2.Left := 10;
-  FoodImage2.Top := 10 + 48 + 10;
-  FoodImage2.Height := 48;
-  FoodImage2.Width := 48;
-  FoodImage2.OnClick := @FeedClick;
-
-  FoodImage3.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/food/2.png');
-  FoodImage3.Left := FoodPanel.Width - 48 - 10;
-  FoodImage3.Top := 10;
-  FoodImage3.Height := 48;
-  FoodImage3.Width := 48;
-  FoodImage3.OnClick := @FeedClick;
-
-  FoodImage4.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/food/3.png');
-  FoodImage4.Left := FoodPanel.Width - 48 - 10;
-  FoodImage4.Top := 10 + 48 + 10;
-  FoodImage4.Height := 48;
-  FoodImage4.Width := 48;
-  FoodImage4.OnClick := @FeedClick;
+        (panel.Controls[i] as TImage).Height := 48;
+        (panel.Controls[i] as TImage).Width := 48;
+        (panel.Controls[i] as TImage).OnClick := @FeedClick;
+      end;
+    end;
+  finally
+    //panel.Free;
+  end;
 end;
 
 procedure TtamegatchiForm.FeedClick(Sender: TObject);
@@ -340,7 +326,7 @@ begin
   roomFromMenu := menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1];
   settingList.Values['Room'] := roomFromMenu;
 
-  MarkerPanel.Visible := False;
+  HealthPanel.Visible := False;
   FoodPanel.Visible := False;
 
   case roomFromMenu of
@@ -349,7 +335,7 @@ begin
     'health':
       updateHealthPanel;
     'food':
-      updateFoodPanel;
+      updateActionPanel('Food');
   end;
 
   if roomFromMenu <> 'exit' then
