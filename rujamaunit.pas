@@ -72,6 +72,8 @@ type
     procedure actionClick(Sender: TObject);
     procedure updateActionPanel(panelname: string);
     procedure DoAnimationPlay(animation: string);
+    procedure consume;
+    procedure save;
   public
 
   end;
@@ -104,9 +106,13 @@ begin
     ((StrToInt(settingList.Values['play']) / 100) * 25) + ((StrToInt(settingList.Values['bath']) / 100) * 15));
 end;
 
+procedure TtamegatchiForm.save;
+begin
+  settingList.SaveToFile(GetCurrentDir + PathDelim + 'tamegotchi.save');
+end;
+
 procedure TtamegatchiForm.InitializeSettings;
 begin
-  settingList := TStringList.Create;
   settingList.Values['Room'] := 'home';
 
   settingList.Values['Frame'] := IntToStr(0);
@@ -117,13 +123,21 @@ begin
   settingList.Values['specialanimationticks'] := '0';
   settingList.Values['specialanimationmaxticks'] := '20';
 
+  settingList.Values['egg'] := '1';
+  settingList.Values['eggtimer'] := '60';
+
   settingList.Values['timeunits'] := '0';
   settingList.Values['lifeticks'] := IntToStr(5 * 4);
   settingList.Values['healthtogrow'] := '6';
   settingList.Values['growticks'] := '0';
   settingList.Values['growstep'] := '5';  //Reach 5 to get next gen
+  settingList.Values['consumeticks'] := '0';
+  settingList.Values['consumemaxticks'] := '480';
 
-  settingList.Values['health'] := '8'; // 4.6 (initial)
+  settingList.Values['top'] := '200';
+  settingList.Values['left'] := '200';
+
+  settingList.Values['health'] := '3'; // 4.6 (initial)
   settingList.Values['food'] := '1'; //50%  4    //0.5  //   0 = Dead
   settingList.Values['book'] := '1'; //10%  0.4  //0.1  // 1-3 = Bad
   settingList.Values['play'] := '1'; //25%  2    //0.2  // 4-6 = Good
@@ -133,6 +147,7 @@ begin
 
   settingList.Values['bg'] := 'bg-lcd-off';
   settingList.Values['imgrootpath'] := GetCurrentDir + PathDelim + 'media' + PathDelim + 'img' + PathDelim;
+  save;
 end;
 
 function getSSetting(setting: string): string;
@@ -169,6 +184,21 @@ var
   aboutlinks: array of string = ('https://rujam.top', 'https://twitch.tv/evel_cult_leader', 'https://twitch.tv/earentir',
     'https://twitch.tv/therujum');
 begin
+  //setup settings
+  settingList := TStringList.Create;
+  if FileExists(GetCurrentDir + PathDelim + 'tamegotchi.save') then
+  begin
+    settingList.LoadFromFile(GetCurrentDir + PathDelim + 'tamegotchi.save');
+
+    settingList.Values['Room'] := 'home';
+    settingList.Values['specialanimation'] := '';
+    settingList.Values['subanimation'] := '0';
+  end
+  else
+    InitializeSettings;
+
+  tamegatchiForm.Top := getISetting('top');
+  tamegatchiForm.Left := getISetting('left');
 
   for i := 0 to Length(abouttext) - 1 do
   begin
@@ -179,9 +209,6 @@ begin
     mi.OnClick := @contextMenuClick;
     contextMenu.Items.Add(mi);
   end;
-
-  //setup settings
-  InitializeSettings;
 
   //setup BG img
   bgImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + getSSetting('bg') + '.png');
@@ -275,7 +302,6 @@ var
   randomNum: integer;
   dirList: TStringList;
 begin
-
   //randomize animation if more than one exists
   if getISetting('subanimation') = 0 then
   begin
@@ -342,7 +368,7 @@ begin
       PlayAnimation('cat' + PathDelim + getSSetting('gen') + PathDelim + getSSetting('specialanimation') +
         PathDelim + getSSetting('subanimation') + PathDelim);
       setISetting('specialanimationticks', getISetting('specialanimationticks') + 1);
-      writeln(getISetting('specialanimationticks'), ' ', getISetting('specialanimationmaxticks'));
+      //writeln(getISetting('specialanimationticks'), ' ', getISetting('specialanimationmaxticks'));
     end
     else
     begin
@@ -352,39 +378,97 @@ begin
   end;
 end;
 
+procedure TtamegatchiForm.consume;
+begin
+  if getISetting('food') > 1 then
+    setISetting('food', getISetting('food') - 1);
+
+  if getISetting('book') > 1 then
+    setISetting('book', getISetting('book') - 1);
+
+  if getISetting('play') > 1 then
+    setISetting('play', getISetting('play') - 1);
+
+  if getISetting('bath') > 1 then
+    setISetting('bath', getISetting('bath') - 1);
+
+  save;
+end;
+
 procedure TtamegatchiForm.MasterTimerTimer(Sender: TObject);
 begin
 
-  //Choose Animation
-  DoAnimationPlay('cat' + getSSetting('gen'));
+  //just do egg
 
-  settingList.Values['Frame'] := IntToStr(getISetting('Frame') + 1);
-  settingList.Values['timeunits'] := IntToStr(getISetting('timeunits') + 1);
-
-  //Update Health
-  if getISetting('timeunits') > getISetting('lifeticks') then
+  if getISetting('egg') = 1 then
   begin
-    settingList.Values['health'] := getHealth;
-  end;
+    setSSetting('specialanimation', 'birth');
 
-  //set GrowTicks
-  if (getISetting('health') > getISetting('healthtogrow')) and (getISetting('gen') < 2) then
-  begin
-    if (getISetting('timeunits') mod 5) = 0 then
+    if getISetting('eggtimer') > 0 then
+      setISetting('eggtimer', getISetting('eggtimer') - 1)
+    else
     begin
-      //writeln('we grew to ', getISetting('growticks'));
-      setISetting('growticks', getISetting('growticks') + 1);
+      setISetting('egg', 0);
+      setSSetting('specialanimation', '');
+      save;
     end;
-  end;
 
-  //Advance if we have enough growticks
-  if (getISetting('gen') < 2) and (getISetting('growticks') >= getISetting('growstep')) then
+    //Choose Animation
+    if getISetting('eggtimer') > 24 then
+      setISetting('Frame', 0)
+    else
+      setISetting('Frame', getISetting('Frame') + 1);
+
+    DoAnimationPlay('cat' + getSSetting('gen'));
+    //settingList.Values['Frame'] := IntToStr(getISetting('Frame') + 1);
+  end
+  else
   begin
-    //writeln('advanced to ', getISetting('gen'));
-    setISetting('gen', getISetting('gen') + 1);
-    setISetting('growticks', 0);
-  end;
+    //Choose Animation
+    DoAnimationPlay('cat' + getSSetting('gen'));
 
+    setISetting('Frame', getISetting('Frame') + 1);
+    setISetting('timeunits', getISetting('timeunits') + 1);
+
+    //Update Health
+    if getISetting('timeunits') > getISetting('lifeticks') then
+    begin
+      settingList.Values['health'] := getHealth;
+    end;
+
+    //set GrowTicks
+    if (getISetting('health') > getISetting('healthtogrow')) and (getISetting('gen') < 2) then
+    begin
+      if (getISetting('timeunits') mod 5) = 0 then
+      begin
+        //writeln('we grew to ', getISetting('growticks'));
+        setISetting('growticks', getISetting('growticks') + 1);
+      end;
+    end;
+
+    //Advance if we have enough growticks
+    if (getISetting('gen') < 2) and (getISetting('growticks') >= getISetting('growstep')) then
+    begin
+      //writeln('advanced to ', getISetting('gen'));
+      setISetting('gen', getISetting('gen') + 1);
+      consume;
+      consume;
+      consume;
+      consume;
+      setISetting('growticks', 0);
+    end;
+
+    if getSSetting('room') = 'health' then
+      updateHealthPanel;
+
+    if (getISetting('consumeticks') > getISetting('consumemaxticks')) then
+    begin
+      consume;
+      setISetting('consumeticks', 0);
+    end
+    else
+      setISetting('consumeticks', getISetting('consumeticks') + 1);
+  end;
 end;
 
 procedure TtamegatchiForm.updateHealthPanel;
@@ -461,7 +545,7 @@ begin
       end;
     end;
   except
-    Writeln('Panel ' + panelname + ' not found.')
+    //Writeln('Panel ' + panelname + ' not found.')
   end;
 end;
 
@@ -474,9 +558,13 @@ begin
   settingname := copy((Sender as TImage).GetNamePath.Replace('Image', ''), 0, Length(
     (Sender as TImage).GetNamePath.Replace('Image', '')) - 1).ToLower;
 
-  setISetting(settingname, getISetting(settingname) + settingindex);
+  if (getISetting(settingname) + settingindex) <= 8 then
+    setISetting(settingname, getISetting(settingname) + settingindex)
+  else
+    setISetting(settingname, 8);
 
   setSSetting('specialanimation', settingname);
+  save;
 end;
 
 procedure TtamegatchiForm.pictoHomeClick(Sender: TObject);
@@ -537,6 +625,9 @@ begin
   begin
     tamegatchiForm.Left := tamegatchiForm.Left + X - mouseX;
     tamegatchiForm.Top := tamegatchiForm.Top + Y - mouseY;
+
+    setISetting('left', tamegatchiForm.Left);
+    setISetting('top', tamegatchiForm.Top);
   end;
 end;
 
