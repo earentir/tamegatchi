@@ -204,6 +204,7 @@ begin
     settingList.Values['Room'] := 'home';
     settingList.Values['specialanimation'] := '';
     settingList.Values['subanimation'] := '0';
+    settingList.Values['Frame'] := '0';
   end
   else
     InitializeSettings;
@@ -222,10 +223,12 @@ begin
   end;
 
   //setup BG img
-  bgImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + getSSetting('bg') + '.png');
+  if FileExists(getSSetting('imgrootpath') + getSSetting('bg') + '.png') then
+    bgImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + getSSetting('bg') + '.png');
 
   //setup default room
-  ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim + 'home.png');
+  if FileExists(getSSetting('imgrootpath') + 'screens' + PathDelim + 'home.png') then
+    ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim + 'home.png');
 
   //Load Pictograms to menu items
   for i := 0 to PictoMenuPanel.ControlCount - 1 do
@@ -303,9 +306,12 @@ begin
   SpriteImage.Top := 120 + topPadding;
   ShadowImage.Top := 120 + topPadding;
 
-  SpriteImage.Picture.png.LoadFromFile(frameFileName);
-  ShadowImage.Picture.png.LoadFromFile(ExtractFilePath(frameFileName) + PathDelim + 'shadow' + PathDelim +
-    ExtractFileName(frameFileName));
+  if FileExists(frameFileName) then
+    SpriteImage.Picture.png.LoadFromFile(frameFileName);
+
+  if FileExists(ExtractFilePath(frameFileName) + PathDelim + 'shadow' + PathDelim + ExtractFileName(frameFileName)) then
+    ShadowImage.Picture.png.LoadFromFile(ExtractFilePath(frameFileName) + PathDelim + 'shadow' + PathDelim +
+      ExtractFileName(frameFileName));
 end;
 
 procedure TtamegatchiForm.DoAnimationPlay(animation: string);
