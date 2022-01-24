@@ -5,7 +5,7 @@ unit rujamaunit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus, FileUtil, LCLIntf, Math;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus, FileUtil, LCLIntf, Math, FileInfo;
 
 type
   numarray = array of integer;
@@ -84,6 +84,7 @@ var
   canMoveForm: boolean;
   mouseX, mouseY: integer;
   menuItems: array of string = ('home', 'health', 'food', 'settings', 'bath', 'play', 'book', 'exit');
+  FileVerInfo: TFileVersionInfo;
 //imgRootPath: string;
 
 
@@ -97,7 +98,8 @@ implementation
 
 function fn(number: real): string;
 begin
-  Result := FormatFloat('#.#', number);
+  Result := IntToStr(Round(number));
+  //Result := FormatFloat('#.#', number);
 end;
 
 function getHealth: string;  // If < 4 then - 1/8 on lifetick, > 4 +1 1/8 on lifetick
@@ -184,6 +186,15 @@ var
   aboutlinks: array of string = ('https://rujam.top', 'https://twitch.tv/evel_cult_leader', 'https://twitch.tv/earentir',
     'https://twitch.tv/therujum');
 begin
+  FileVerInfo := TFileVersionInfo.Create(nil);
+  try
+    FileVerInfo.ReadFileInfo;
+    insert('v ' + FileVerInfo.VersionStrings.Values['FileVersion'], abouttext, length(abouttext));
+    insert('https://itch.io/', aboutlinks, length(aboutlinks));
+  finally
+    FileVerInfo.Free;
+  end;
+
   //setup settings
   settingList := TStringList.Create;
   if FileExists(GetCurrentDir + PathDelim + 'tamegotchi.save') then
@@ -591,7 +602,7 @@ begin
       updateHealthPanel;
   end;
 
-  if roomFromMenu <> 'exit' then
+  if (roomFromMenu <> 'exit') and (roomFromMenu <> 'settings') then
     ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim +
       menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
 
