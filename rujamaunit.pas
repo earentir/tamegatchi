@@ -110,7 +110,7 @@ end;
 
 procedure TtamegatchiForm.save;
 begin
-  settingList.SaveToFile(GetCurrentDir + PathDelim + 'tamegotchi.save');
+  settingList.SaveToFile(GetCurrentDir + PathDelim + 'tamegatchi.save');
 end;
 
 procedure TtamegatchiForm.InitializeSettings;
@@ -197,9 +197,9 @@ begin
 
   //setup settings
   settingList := TStringList.Create;
-  if FileExists(GetCurrentDir + PathDelim + 'tamegotchi.save') then
+  if FileExists(GetCurrentDir + PathDelim + 'tamegatchi.save') then
   begin
-    settingList.LoadFromFile(GetCurrentDir + PathDelim + 'tamegotchi.save');
+    settingList.LoadFromFile(GetCurrentDir + PathDelim + 'tamegatchi.save');
 
     settingList.Values['Room'] := 'home';
     settingList.Values['specialanimation'] := '';
@@ -282,7 +282,7 @@ begin
   end
   else
   begin
-    settingList.Values['Frame'] := IntToStr(0);
+    setISetting('Frame', 0);
     Result := imagefilename.Strings[0];
   end;
 end;
@@ -581,6 +581,7 @@ begin
     setISetting(settingname, 8);
 
   setSSetting('specialanimation', settingname);
+  setISetting('Frame', 0);
   save;
 end;
 
@@ -596,8 +597,9 @@ begin
   begin
     if (tamegatchiForm.Controls[i].ClassName = 'TPanel') then
     begin
-      if (tamegatchiForm.Controls[i].GetNamePath <> 'PictoMenuPanel') then
-        (tamegatchiForm.Controls[i] as TPanel).Visible := False;
+      if roomFromMenu <> 'settings' then
+        if (tamegatchiForm.Controls[i].GetNamePath <> 'PictoMenuPanel') then
+          (tamegatchiForm.Controls[i] as TPanel).Visible := False;
     end;
   end;
 
@@ -609,11 +611,17 @@ begin
   end;
 
   if (roomFromMenu <> 'exit') and (roomFromMenu <> 'settings') then
-    ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim +
-      menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
+  begin
+    if FileExists(getSSetting('imgrootpath') + 'screens' + PathDelim +
+      menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png') then
+      ScreensImage.Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'screens' + PathDelim +
+        menuItems[StrToInt(Copy((Sender as TImage).GetNamePath, Length('pictoHome') + 1, 2)) - 1] + '.png');
+  end;
 
-  if (roomFromMenu <> 'exit') and (roomFromMenu <> 'health') then
+  if (roomFromMenu <> 'exit') and (roomFromMenu <> 'health') and (roomFromMenu <> 'settings') then
+  begin
     updateActionPanel(roomFromMenu);
+  end;
 end;
 
 procedure TtamegatchiForm.PictoMenuPanelDblClick(Sender: TObject);
