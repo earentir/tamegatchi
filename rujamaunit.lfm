@@ -359,6 +359,48 @@ object tamegatchiForm: TtamegatchiForm
       Stretch = True
     end
   end
+  object SettingsPanel: TPanel
+    Left = 288
+    Height = 50
+    Top = 16
+    Width = 50
+    BevelOuter = bvNone
+    ClientHeight = 50
+    ClientWidth = 50
+    TabOrder = 6
+    Visible = False
+    OnMouseDown = SpriteImageMouseDown
+    OnMouseMove = SpriteImageMouseMove
+    OnMouseUp = SpriteImageMouseUp
+    object SettingsImage1: TImage
+      Left = 20
+      Height = 9
+      Top = 0
+      Width = 15
+      Stretch = True
+    end
+    object SettingsImage2: TImage
+      Left = 20
+      Height = 9
+      Top = 10
+      Width = 15
+      Stretch = True
+    end
+    object SettingsImage3: TImage
+      Left = 20
+      Height = 9
+      Top = 20
+      Width = 15
+      Stretch = True
+    end
+    object SettingsImage4: TImage
+      Left = 20
+      Height = 9
+      Top = 30
+      Width = 15
+      Stretch = True
+    end
+  end
   object MasterTimer: TTimer
     Interval = 250
     OnTimer = MasterTimerTimer

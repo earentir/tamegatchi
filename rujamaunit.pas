@@ -19,7 +19,12 @@ type
     BathImage2: TImage;
     BathImage3: TImage;
     BathImage4: TImage;
+    SettingsImage1: TImage;
+    SettingsImage2: TImage;
+    SettingsImage3: TImage;
+    SettingsImage4: TImage;
     BathPanel: TPanel;
+    SettingsPanel: TPanel;
     FoodImage2: TImage;
     bgImage: TImage;
     FoodImage4: TImage;
@@ -185,6 +190,8 @@ begin
 
   settingList.Values['bg'] := 'bg-lcd-off';
   settingList.Values['imgrootpath'] := GetCurrentDir + PathDelim + 'media' + PathDelim + 'img' + PathDelim;
+  settingList.Values['naiconpath'] := settingList.Values['imgrootpath'] + 'icons' + PathDelim + 'na.png';
+
   save;
 end;
 
@@ -205,6 +212,7 @@ end;
 function getISetting(setting: string): integer;
 begin
   log('getISetting: ' + setting + ' :' + settingList.Values[setting]);
+
   if settingList.Values[setting] <> '' then
     Result := Round(StrToFloat(settingList.Values[setting]))
   else
@@ -225,6 +233,7 @@ end;
 
 function checkifActionCanUse(action: string): boolean;
 begin
+
   if getSSetting(action) <> '' then
   begin
     if (DateTimeToUnix(now) - getISetting(action) > 60) then
@@ -233,10 +242,14 @@ begin
       Result := True;
     end
     else
+    begin
       Result := False;
+    end;
   end
   else
+  begin
     Result := True;
+  end;
 end;
 
 procedure TtamegatchiForm.contextMenuClick(Sender: TObject);
@@ -471,7 +484,6 @@ begin
       PlayAnimation('cat' + PathDelim + getSSetting('gen') + PathDelim + getSSetting('specialanimation') +
         PathDelim + getSSetting('subanimation') + PathDelim);
       setISetting('specialanimationticks', getISetting('specialanimationticks') + 1);
-      //writeln(getISetting('specialanimationticks'), ' ', getISetting('specialanimationmaxticks'));
     end
     else
     begin
@@ -560,7 +572,6 @@ begin
     begin
       if (getISetting('timeunits') mod 5) = 0 then
       begin
-        //writeln('we grew to ', getISetting('growticks'));
         setISetting('growticks', getISetting('growticks') + 1);
       end;
     end;
@@ -568,7 +579,6 @@ begin
     //Advance if we have enough growticks
     if (getISetting('gen') < 2) and (getISetting('growticks') >= getISetting('growstep')) then
     begin
-      //writeln('advanced to ', getISetting('gen'));
       setISetting('gen', getISetting('gen') + 1);
       consume('all', 4);
       setISetting('growticks', 0);
@@ -646,14 +656,13 @@ begin
         begin
           if checkifActionCanUse(panelname.ToLower + IntToStr(i + 1)) then
           begin
-            //writeln('correct png');
             (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons' +
               PathDelim + panelname.ToLower + PathDelim + IntToStr(i) + '.png');
           end
           else
           begin
-            //writeln('na.png');
-            (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons' + PathDelim + 'na.png');
+            if FileExists(getSSetting('naiconpath')) then
+            (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('naiconpath'));
           end;
 
           if i <= 1 then
@@ -667,22 +676,18 @@ begin
             (panel.Controls[i] as TImage).Top := 10 + ((i - 2) * 10) + ((i - 2) * 48);
           end;
 
-
           (panel.Controls[i] as TImage).Height := 48;
           (panel.Controls[i] as TImage).Width := 48;
 
-          if checkifActionCanUse(panelname.ToLower + IntToStr(i+1)) then
+          if checkifActionCanUse(panelname.ToLower + IntToStr(i + 1)) then
             (panel.Controls[i] as TImage).OnClick := @ActionClick
           else
             (panel.Controls[i] as TImage).OnClick := nil;
-
         end;
       end;
-
     end;
   except
-
-    //Writeln('Panel ' + panelname + ' not found.')
+    //exception here
   end;
 end;
 
@@ -695,14 +700,13 @@ begin
   settingname := copy((Sender as TImage).GetNamePath.Replace('Image', ''), 0, Length(
     (Sender as TImage).GetNamePath.Replace('Image', '')) - 1).ToLower;
 
-  writeln(settingname, ' ', settingindex);
-
   if (getISetting(settingname) + settingindex) <= 8 then
     setISetting(settingname, getISetting(settingname) + settingindex)
   else
     setISetting(settingname, 8);
 
   updateActionUse(settingname + IntToStr(settingindex));
+  updateActionPanel(settingname);
   setSSetting('specialanimation', settingname);
   setISetting('Frame', 0);
   save;
