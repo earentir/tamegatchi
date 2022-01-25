@@ -12,6 +12,7 @@ object tamegatchiForm: TtamegatchiForm
   FormStyle = fsSystemStayOnTop
   OnCreate = FormCreate
   OnPaint = FormPaint
+  LCLVersion = '2.2.0.4'
   object bgImage: TImage
     Left = 0
     Height = 512

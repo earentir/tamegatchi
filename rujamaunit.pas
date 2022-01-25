@@ -151,9 +151,10 @@ begin
   settingList.Values['lifeticks'] := IntToStr(5 * 4);
   settingList.Values['healthtogrow'] := '6';
   settingList.Values['growticks'] := '0';
-  settingList.Values['growstep'] := '5';  //Reach 5 to get next gen
+  settingList.Values['growstep'] := '15';  //Reach 5 to get next gen
   settingList.Values['consumeticks'] := '0';
   settingList.Values['consumemaxticks'] := '480';
+  settingList.Values['actiontimeout'] := '120';
 
 
   settingList.Values['food1'] := '';
@@ -176,7 +177,7 @@ begin
   settingList.Values['bath3'] := '';
   settingList.Values['bath4'] := '';
 
-
+  settingList.Values['toppadding'] := '15';
   settingList.Values['top'] := '200';
   settingList.Values['left'] := '200';
 
@@ -187,6 +188,7 @@ begin
   settingList.Values['bath'] := '1'; //15%  1.2  //0.2  // 6-8 = Excelent
 
   settingList.Values['gen'] := '0';
+  settingList.Values['genscale'] := '1';
 
   settingList.Values['bg'] := 'bg-lcd-off';
   settingList.Values['imgrootpath'] := GetCurrentDir + PathDelim + 'media' + PathDelim + 'img' + PathDelim;
@@ -233,10 +235,9 @@ end;
 
 function checkifActionCanUse(action: string): boolean;
 begin
-
   if getSSetting(action) <> '' then
   begin
-    if (DateTimeToUnix(now) - getISetting(action) > 60) then
+    if (DateTimeToUnix(now) - getISetting(action) > getISetting('actiontimeout')) then
     begin
       setSSetting(action, '');
       Result := True;
@@ -390,11 +391,11 @@ begin
 
   case getSSetting('gen') of
     '0':
-      topPadding := 60;
+      topPadding := getISetting('toppadding') + 45;
     '1':
-      topPadding := 50;
+      topPadding := getISetting('toppadding') + 35;
     '2':
-      topPadding := 15;
+      topPadding := getISetting('toppadding');
   end;
 
   SpriteImage.Top := 120 + topPadding;
@@ -662,7 +663,7 @@ begin
           else
           begin
             if FileExists(getSSetting('naiconpath')) then
-            (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('naiconpath'));
+              (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('naiconpath'));
           end;
 
           if i <= 1 then
