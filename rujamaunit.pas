@@ -5,7 +5,7 @@ unit rujamaunit;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus, FileUtil, LCLIntf, Math, FileInfo;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus, FileUtil, LCLIntf, Math, FileInfo, DateUtils;
 
 type
   numarray = array of integer;
@@ -72,7 +72,7 @@ type
     procedure actionClick(Sender: TObject);
     procedure updateActionPanel(panelname: string);
     procedure DoAnimationPlay(animation: string);
-    procedure consume;
+    procedure consume(actionType: string; howmany: integer);
     procedure save;
   public
 
@@ -95,6 +95,20 @@ implementation
 { TtamegatchiForm }
 
 //Icon Attribution: Entypo pictograms by Daniel Bruce — www.entypo.com
+
+procedure log(message: string);
+var
+  log: TStringList;
+begin
+  log := TStringList.Create;
+  if FileExists(GetCurrentDir + PathDelim + 'log.txt') then
+  begin
+    //log.LoadFromFile(GetCurrentDir + PathDelim + 'log.txt');
+  end;
+
+  //log.Add(message);
+  //log.SaveToFile(GetCurrentDir + PathDelim + 'log.txt');
+end;
 
 function fn(number: real): string;
 begin
@@ -136,6 +150,28 @@ begin
   settingList.Values['consumeticks'] := '0';
   settingList.Values['consumemaxticks'] := '480';
 
+
+  settingList.Values['food1'] := '';
+  settingList.Values['food2'] := '';
+  settingList.Values['food3'] := '';
+  settingList.Values['food4'] := '';
+
+  settingList.Values['play1'] := '';
+  settingList.Values['play2'] := '';
+  settingList.Values['play3'] := '';
+  settingList.Values['play4'] := '';
+
+  settingList.Values['book1'] := '';
+  settingList.Values['book2'] := '';
+  settingList.Values['book3'] := '';
+  settingList.Values['book4'] := '';
+
+  settingList.Values['bath1'] := '';
+  settingList.Values['bath2'] := '';
+  settingList.Values['bath3'] := '';
+  settingList.Values['bath4'] := '';
+
+
   settingList.Values['top'] := '200';
   settingList.Values['left'] := '200';
 
@@ -154,23 +190,53 @@ end;
 
 function getSSetting(setting: string): string;
 begin
+  log('getSSetting: ' + setting + ' :' + settingList.Values[setting]);
+
   Result := settingList.Values[setting];
 end;
 
 procedure setSSetting(setting, Value: string);
 begin
+  log('setSSetting: ' + setting + ' :' + Value);
+
   settingList.Values[setting] := Value;
 end;
 
 function getISetting(setting: string): integer;
 begin
-  Result :=
-    Round(StrToFloat(settingList.Values[setting]));
+  log('getISetting: ' + setting + ' :' + settingList.Values[setting]);
+  if settingList.Values[setting] <> '' then
+    Result := Round(StrToFloat(settingList.Values[setting]))
+  else
+    Result := 0;
 end;
 
 procedure setISetting(setting: string; Value: integer);
 begin
+  log('setISetting: ' + setting + ' :' + IntToStr(Value));
+
   settingList.Values[setting] := IntToStr(Value);
+end;
+
+procedure updateActionUse(action: string);
+begin
+  setISetting(action, DateTimeToUnix(now));
+end;
+
+function checkifActionCanUse(action: string): boolean;
+begin
+  if getSSetting(action) <> '' then
+  begin
+    if (DateTimeToUnix(now) - getISetting(action) > 60) then
+    begin
+      setSSetting(action, '');
+      Result := True;
+    end
+    else
+      Result := False;
+  end
+  else
+    Result := True;
 end;
 
 procedure TtamegatchiForm.contextMenuClick(Sender: TObject);
@@ -246,6 +312,8 @@ begin
   maskpicture := TPicture.Create;
   maskpicture.PNG.LoadFromFile(getSSetting('imgrootpath') + getSSetting('bg') + '.png');
   SetShape(maskpicture.Bitmap);
+
+  maskpicture.Free;
 end;
 
 
@@ -259,14 +327,22 @@ begin
   newfiles := TStringList.Create;
 
   FindAllFiles(files, getSSetting('imgrootpath') + objectName, '*.png', False);
-  path := ExtractFilePath(files[0]);
 
-  for i := 0 to files.Count - 1 do
+  if files.Count > 1 then
   begin
-    newfiles.Add(path + IntToStr(i) + '.png');
+
+    path := ExtractFilePath(files[0]);
+
+    for i := 0 to files.Count - 1 do
+    begin
+      newfiles.Add(path + IntToStr(i) + '.png');
+    end;
   end;
 
   Result := newfiles;
+
+  //files.Free;
+  //newfiles.Free;
 end;
 
 function AnimateObject(objectName: string; index: integer): string;
@@ -276,15 +352,20 @@ begin
   imagefilename := TStringList.Create;
   imagefilename := getFrames(objectName);
 
-  if getISetting('Frame') < imagefilename.Count - 1 then
+  if imagefilename.Count > 1 then
   begin
-    Result := imagefilename.Strings[index];
-  end
-  else
-  begin
-    setISetting('Frame', 0);
-    Result := imagefilename.Strings[0];
+    if getISetting('Frame') < imagefilename.Count - 1 then
+    begin
+      Result := imagefilename.Strings[index];
+    end
+    else
+    begin
+      setISetting('Frame', 0);
+      Result := imagefilename.Strings[0];
+    end;
   end;
+
+  //imagefilename.Free;
 end;
 
 procedure TtamegatchiForm.PlayAnimation(objectName: string);
@@ -355,6 +436,11 @@ begin
     begin
       if (randomNum >= 190) and (randomNum <= 200) then
       begin
+        if getSSetting('animation') = 'food' then
+        begin
+          consume('food', 3);
+        end;
+
         setSSetting('subanimation', '2');
         setISetting('subanimationticks', 20);
       end;
@@ -393,30 +479,46 @@ begin
       setSSetting('specialanimation', '');
     end;
   end;
+
+  dirList.Free;
 end;
 
-procedure TtamegatchiForm.consume;
+procedure TtamegatchiForm.consume(actionType: string; howmany: integer);
+var
+  i, j: integer;
+  all: array of string = ('home', 'food', 'play', 'book');
 begin
-  if getISetting('food') > 1 then
-    setISetting('food', getISetting('food') - 1);
 
-  if getISetting('book') > 1 then
-    setISetting('book', getISetting('book') - 1);
-
-  if getISetting('play') > 1 then
-    setISetting('play', getISetting('play') - 1);
-
-  if getISetting('bath') > 1 then
-    setISetting('bath', getISetting('bath') - 1);
+  if actionType = 'all' then
+  begin
+    for j := 0 to length(all) - 1 do
+    begin
+      for i := 0 to howmany do
+      begin
+        if (getISetting(all[j]) > 1) then
+        begin
+          setISetting(all[j], getISetting(all[j]) - 1);
+        end;
+      end;
+    end;
+  end
+  else
+  begin
+    for i := 0 to howmany do
+    begin
+      if (getISetting(actionType) > 1) then
+      begin
+        setISetting(actionType, getISetting(actionType) - 1);
+      end;
+    end;
+  end;
 
   save;
 end;
 
 procedure TtamegatchiForm.MasterTimerTimer(Sender: TObject);
 begin
-
   //just do egg
-
   if getISetting('egg') = 1 then
   begin
     setSSetting('specialanimation', 'birth');
@@ -468,10 +570,7 @@ begin
     begin
       //writeln('advanced to ', getISetting('gen'));
       setISetting('gen', getISetting('gen') + 1);
-      consume;
-      consume;
-      consume;
-      consume;
+      consume('all', 4);
       setISetting('growticks', 0);
     end;
 
@@ -480,7 +579,7 @@ begin
 
     if (getISetting('consumeticks') > getISetting('consumemaxticks')) then
     begin
-      consume;
+      consume('all', 1);
       setISetting('consumeticks', 0);
     end
     else
@@ -532,36 +631,57 @@ begin
   end;
 
   try
-    panel.Visible := True;
-
-    panel.Width := PictoMenuPanel.Width;
-    panel.Height := 156;
-    panel.Top := PictoMenuPanel.Top + 50;
-    panel.Left := PictoMenuPanel.Left;
-
-    for i := 0 to panel.ControlCount - 1 do
+    if getSSetting('room') <> 'home' then
     begin
-      if (panel.Controls[i].ClassType.ClassName = 'TImage') then
+      panel.Visible := True;
+
+      panel.Width := PictoMenuPanel.Width;
+      panel.Height := 156;
+      panel.Top := PictoMenuPanel.Top + 50;
+      panel.Left := PictoMenuPanel.Left;
+
+      for i := 0 to panel.ControlCount - 1 do
       begin
-        (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons/' +
-          panelname.ToLower + '/' + IntToStr(i) + '.png');
+        if (panel.Controls[i].ClassType.ClassName = 'TImage') then
+        begin
+          if checkifActionCanUse(panelname.ToLower + IntToStr(i + 1)) then
+          begin
+            //writeln('correct png');
+            (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons' +
+              PathDelim + panelname.ToLower + PathDelim + IntToStr(i) + '.png');
+          end
+          else
+          begin
+            //writeln('na.png');
+            (panel.Controls[i] as TImage).Picture.PNG.LoadFromFile(getSSetting('imgrootpath') + 'icons' + PathDelim + 'na.png');
+          end;
 
-        if i <= 1 then
-          (panel.Controls[i] as TImage).Left := 10
-        else
-          (panel.Controls[i] as TImage).Left := panel.Width - 48 - 10;
+          if i <= 1 then
+          begin
+            (panel.Controls[i] as TImage).Left := 10;
+            (panel.Controls[i] as TImage).Top := 10 + (i * 10) + (i * 48);
+          end
+          else
+          begin
+            (panel.Controls[i] as TImage).Left := panel.Width - 48 - 10;
+            (panel.Controls[i] as TImage).Top := 10 + ((i - 2) * 10) + ((i - 2) * 48);
+          end;
 
-        if i <= 1 then
-          (panel.Controls[i] as TImage).Top := 10 + (i * 10) + (i * 48)
-        else
-          (panel.Controls[i] as TImage).Top := 10 + ((i - 2) * 10) + ((i - 2) * 48);
 
-        (panel.Controls[i] as TImage).Height := 48;
-        (panel.Controls[i] as TImage).Width := 48;
-        (panel.Controls[i] as TImage).OnClick := @ActionClick;
+          (panel.Controls[i] as TImage).Height := 48;
+          (panel.Controls[i] as TImage).Width := 48;
+
+          if checkifActionCanUse(panelname.ToLower + IntToStr(i+1)) then
+            (panel.Controls[i] as TImage).OnClick := @ActionClick
+          else
+            (panel.Controls[i] as TImage).OnClick := nil;
+
+        end;
       end;
+
     end;
   except
+
     //Writeln('Panel ' + panelname + ' not found.')
   end;
 end;
@@ -575,11 +695,14 @@ begin
   settingname := copy((Sender as TImage).GetNamePath.Replace('Image', ''), 0, Length(
     (Sender as TImage).GetNamePath.Replace('Image', '')) - 1).ToLower;
 
+  writeln(settingname, ' ', settingindex);
+
   if (getISetting(settingname) + settingindex) <= 8 then
     setISetting(settingname, getISetting(settingname) + settingindex)
   else
     setISetting(settingname, 8);
 
+  updateActionUse(settingname + IntToStr(settingindex));
   setSSetting('specialanimation', settingname);
   setISetting('Frame', 0);
   save;
@@ -598,8 +721,10 @@ begin
     if (tamegatchiForm.Controls[i].ClassName = 'TPanel') then
     begin
       if roomFromMenu <> 'settings' then
+      begin
         if (tamegatchiForm.Controls[i].GetNamePath <> 'PictoMenuPanel') then
           (tamegatchiForm.Controls[i] as TPanel).Visible := False;
+      end;
     end;
   end;
 
